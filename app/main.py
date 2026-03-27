@@ -1,6 +1,8 @@
 from datetime import datetime
+import os
+import uuid
 
-from fastapi import FastAPI, Depends, HTTPException, status, Request, Form
+from fastapi import FastAPI, Depends, File, HTTPException, UploadFile, status, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -16,10 +18,14 @@ app = FastAPI()
 # 정적 파일 및 템플릿 설정
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
+#
 # ---------------------------------------------------------
 # [Page] HTML 렌더링 컨트롤러 (브라우저 접속용)
 # ---------------------------------------------------------
+@app.get("/map", response_class=HTMLResponse)
+async def map(request: Request):
+    return templates.TemplateResponse("map.html", {"request": request})
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -33,6 +39,31 @@ async def register_page(request: Request):
 async def login_page(request: Request):
     """로그인 페이지 이동"""
     return templates.TemplateResponse("Login.html", {"request": request})
+
+@app.get("/Mypage", response_class=HTMLResponse)
+async def login_page(request: Request):
+    """로그인 페이지 이동"""
+    return templates.TemplateResponse("profile.html", {"request": request})
+
+# --------------------------------------------------------
+# [WEB] 일기 작성
+# --------------------------------------------------------
+
+@app.get("/write/1", response_class=HTMLResponse)
+def write(request: Request):
+    return templates.TemplateResponse("write1.html", {"request": request})
+
+@app.get("/write/2", response_class=HTMLResponse)
+def write2(request: Request):
+    return templates.TemplateResponse("write2.html", {"request": request})
+
+@app.get("/write/popupmap", response_class=HTMLResponse)
+async def writemap(request: Request):
+    return templates.TemplateResponse("popupmap.html", {"request": request})
+
+@app.get("/write/edit", response_class=HTMLResponse)
+async def edit(request: Request):
+    return templates.TemplateResponse("write2(update).html", {"request": request})
 
 # ---------------------------------------------------------
 # [API] 데이터 처리 컨트롤러 (실제 로직)
@@ -110,13 +141,11 @@ async def read_user_me(current_user: models.User = Depends(auth.get_current_user
         "id": current_user.id,
         "email": current_user.email,
         "nickname": current_user.nickname,
-        "name": current_user.name
+        "name": current_user.name,
+        "phone": current_user.phone,
+        "birthday": current_user.birthday
     }
 
-# 내 모든 글 가져오기
-@app.get("/api/posts/mine")
-async def get_my_posts(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
-    return db.query(models.Post).filter(models.Post.author_id == current_user.id).all()
 
 # 랜덤 명언 (기존 Good_Say 대체)
 @app.get("/api/quotes/random")
@@ -125,3 +154,108 @@ async def get_quote():
     return {"message": "행복은 습관이다.", "author": "허버드"}
 
 # ---------------------------------------------------------
+
+# app/main.py 에 추가
+
+@app.patch("/api/user/update")
+async def update_user_info(
+    nickname: str = Form(...),
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    # 1. 기존 닉네임과 동일한지 체크 (선택 사항)
+    if current_user.nickname == nickname:
+        raise HTTPException(status_code=400, detail="변경사항이 없습니다.")
+
+    # 2. 닉네임 업데이트
+    current_user.nickname = nickname
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    
+    return {"status": "OK", "message": "닉네임이 변경되었습니다."}
+
+# ------------------------------------------------------------
+# 일기 API
+# ------------------------------------------------------------
+
+# 내 모든 글 가져오기
+@app.get("/api/posts/mine")
+async def get_my_posts(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
+    return db.query(models.Post).filter(models.Post.author_id == current_user.id).all()
+
+#일기 목록 조회 
+@app.get("/api/posts/my-list")
+async def get_my_posts_list(
+    page: int = 0, 
+    limit: int = 10,
+    current_user: models.User = Depends(auth.get_current_user), 
+    db: Session = Depends(database.get_db)
+):
+    # 전체 게시글 수 계산
+    total_count = db.query(models.Post).filter(models.Post.author_id == current_user.id).count()
+    
+    # 페이징 적용하여 가져오기
+    posts = db.query(models.Post)\
+        .filter(models.Post.author_id == current_user.id)\
+        .order_by(models.Post.created_at.desc())\
+        .offset(page * limit)\
+        .limit(limit)\
+        .all()
+    
+    return {
+        "total": total_count,
+        "items": posts,
+        "page": page,
+        "limit": limit
+    }
+
+# 1. 이미지 업로드 API (파일을 서버에 저장하고 경로 반환)
+@app.post("/api/upload")
+async def upload_file(file: UploadFile = File(...)):
+    UPLOAD_DIR = "app/static/uploads"
+    if not os.path.exists(UPLOAD_DIR):
+        os.makedirs(UPLOAD_DIR)
+    
+    file_extension = file.filename.split(".")[-1]
+    file_name = f"{uuid.uuid4()}.{file_extension}"
+    file_path = os.path.join(UPLOAD_DIR, file_name)
+    
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+        
+    return f"/static/uploads/{file_name}"
+
+# 2. 일기 작성 API
+@app.post("/api/posts")
+async def create_post(
+    title: str = Form(...),
+    content: str = Form(...),
+    feel: str = Form(...),
+    eat: str = Form(...),
+    people_meet: str = Form(...),
+    lat: float = Form(...),
+    lng: float = Form(...),
+    address: str = Form(...),
+    place_name: str = Form(None),
+    image_url: str = Form(None),
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    new_post = models.Post(
+        author_id=current_user.id,
+        title=title,
+        content=content,
+        image_url=image_url,
+        feel=feel,
+        eat=eat, 
+        people_meet=people_meet, 
+        lat=lat,
+        lng=lng, 
+        address=address
+    )
+    # *참고: models.py에 해당 필드들이 정의되어 있어야 합니다.
+    
+    db.add(new_post)
+    db.commit()
+    return {"status": "OK"}

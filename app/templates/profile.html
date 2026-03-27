@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../static/css/header2.css">
     <link rel="stylesheet" href="../static/css/header3.css">
     <link rel="stylesheet" href="../static/css/profile.css">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>DAILY LOG</title>
 
@@ -31,76 +32,9 @@
 
     <!-- 스크립트 -->
     <script src="../static/js/index.js" defer></script>
-
-    <script>
-        $(document).ready(function () {
-            if (document.cookie.includes("user_id=")) {
-                login = true
-                if (document.cookie.split("user_id=")[1].includes(";")) {
-                    id = document.cookie.split("user_id=")[1].split(";")[0].replace(" ", "")
-                } else {
-                    id = document.cookie.split("user_id=")[1].replace(" ", "")
-                }
-                $.ajax({
-                    url: "/User",
-                    method: "POST",
-                    data: {
-                        id: id
-                    },
-                    success: function (response) {
-                        document.getElementById("email").value = response.email
-                        document.getElementById("name").value = response.name
-                        document.getElementById("nickname").value = response.nickname
-                        document.getElementById("birthday").value = response.birthday
-                        document.getElementById("phone").value = response.phone
-                    }
-                })
-            } else {
-                login = false
-                location.href = "/Login?loc = Mypage"
-                alert("로그인이 필요합니다.")
-            }
-        })
-    </script>
+    <script src="../static/js/auth.js" defer></script>
+    <script src="../static/js/mypage.js" defer></script>    
 </head>
-<script>
-    function update() {
-        $.ajax({
-            url: "/User",
-            method: "POST",
-            data: {
-                id: id
-            },
-            success: function (response) {
-                if (document.getElementById("nickname").value == response.nickname) {
-                    alert("변경사항이 존재하지 않습니다.")
-                } else {
-                    $.ajax({
-                        url: "/User",
-                        method: "PATCH",
-                        data: {
-                            'id': id,
-                            'nickname': document.getElementById("nickname").value
-                        },
-                        success: function (response) {
-                            if (response == "OK") {
-                                location.reload()
-                                alert("변경이 완료되었습니다.")
-                            }
-
-                        }
-                    })
-                }
-            }
-        })
-    }
-    function logout() {
-        document.cookie = "user_id = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-        location.href = "/"
-        alert("로그아웃 되었습니다.")
-    }
-</script>
-
 <body>
     <!-- 헤더 시작 -->
     <header class="header">
@@ -137,7 +71,6 @@
             <!-- 아이콘 끝 -->
         </div>
     </header>
-    </div>
     <!-- 헤더 끝 -->
 
     <!-- 메인 시작 -->
@@ -172,7 +105,7 @@
                     </div>
                     <div>
                         <label for="birthday">생년월일</label>
-                        <input type="text" id="birthday">
+                        <input type="text" id="birthday" readonly>
                     </div>
                     <div>
                         <label for="phone">전화번호</label>
