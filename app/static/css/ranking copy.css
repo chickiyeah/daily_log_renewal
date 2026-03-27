@@ -1,0 +1,219 @@
+.ranking_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15rem 0 8rem 0;
+}
+
+.ranking_text {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.ranking_text h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: #35B8E1;
+}
+
+.ranking_text h4 {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #515151;
+    opacity: 60%;
+    margin-top: 0.3rem;
+}
+
+.ranking_category ul {
+    display: flex;
+    flex-direction: row;
+    margin: 1.6rem;
+    justify-content: center;
+}
+
+.ranking_category ul li {
+    color: #35B8E1;
+    border: 0.04rem solid #35B8E1;
+    border-radius: 0.5rem;
+    padding: 0.9rem 3.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+    margin-right: 0.8rem;
+}
+
+.ranking_category ul li:hover {
+    box-shadow: 2px 2px #0a87ad, 3px 3px #0a87ad, 4px 4px #0a87ad;
+    transform: translateX(0.2rem);
+}
+
+/* card 3개*/
+.ranking_card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 1rem
+}
+
+.ranking_card div {
+    background: #35B8E1;
+    padding: 8rem;
+    margin: 3rem 1.5rem 0 1rem;
+    border-radius: 100%;
+    transition: background 0.5s;
+    color: white;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+}
+
+/* cart 애니메이션 */
+.ranking_card div:nth-child(1) {
+    animation: flash1 3s infinite;
+    background: #FF7A85;
+}
+
+@keyframes flash1 {
+    0% {
+        opacity: 1;
+        transform: translateY(50px)
+    }
+
+    50% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.ranking_card div:nth-child(2) {
+    animation: flash2 3s infinite;
+    background: #008C8C;
+}
+
+@keyframes flash2 {
+    0% {
+        opacity: 1;
+        transform: translateY(50px)
+    }
+
+    50% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.ranking_card div:nth-child(3) {
+    animation: flash3 3s infinite;
+    background: #6495ED;
+}
+
+@keyframes flash3 {
+    0% {
+        opacity: 1;
+        transform: translateY(50px)
+    }
+
+    50% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.ranking_card div:hover {
+    background: #35B8E1 radial-gradient(circle, transparent 5%, #35B8E1 5%) center/18000%;
+    color: white;
+}
+
+.ranking_card div:active {
+    background-color: #35B8E1;
+    background-size: 100%;
+    transition: background 0s;
+}
+
+.ranking_card div h2 {
+    font-size: 2rem;
+    position: absolute;
+    top: 4rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ranking_card div h4 {
+    font-size: 1.3rem;
+    font-weight: 300;
+    position: absolute;
+    top: 8.1rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ranking_card div p {
+    font-size: 1.6rem;
+    position: absolute;
+    top: 12rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@media(max-width:767px) and (min-width:320px) {
+    .top_logo a i {
+        display: block;
+        position: absolute;
+        font-size: 2rem;
+        top: 2rem;
+        right: 2rem;
+        color: #909090;
+    }
+
+    .ranking_section {
+        padding-top: 10rem;
+    }
+
+    #ranking_card {
+        flex-direction: column;
+    }
+
+    .ranking_category {
+        margin: auto;
+        width: 60%;
+        justify-content: center;
+
+    }
+
+    .ranking_category ul li {
+        padding: 0.9rem 5.5%;
+        margin-left: 0.3rem;
+        margin-right: 0.3rem;
+        width: 60%;
+
+    }
+
+    .ranking_category ul {
+        margin: auto;
+        display: flex;
+        align-items: center;
+
+    }
+
+    .ranking_text {
+        width: 50%;
+        text-align: center;
+        padding: 1rem;
+        margin: auto;
+    }
+
+    .ranking_text h4 {
+        width: 100%;
+        margin: 1.5rem 0;
+    }
+
+}

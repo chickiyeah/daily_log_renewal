@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/reset.css">
+    <link rel="stylesheet" href="../static/css/header2.css">
+    <link rel="stylesheet" href="../static/css/revise.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nixie+One&family=Noto+Sans+KR:wght@100&display=swap"
+        rel="stylesheet">
+    <title>DAILY LOG</title>
+
+    <!-- 카톡에 링크 보낼시 표시 / 구글 검색 태그 -->
+    <meta property="og:site_name" content="데일리로그">
+    <meta property="og:locale" content="ko_KR">
+    <meta name="author" content="나경원, 연수아">
+    <meta name="keywords" content="일기, 기록, 하루, 일상, 데일리, 로그, 데일리로그">
+    <meta property="og:url" content="http://dailylog.kro.kr">
+    <meta property="og:title" content="데일리로그">
+    <meta property="og:description" content="하루 일상중 특별했던 기억을 기록하고 언제나 추억처럼 꺼내보세요.">
+    <meta property="og:image" content="/static/assets/og_logo.jpg">
+
+    <!-- 아이콘 -->
+    <script src="https://kit.fontawesome.com/80a9730165.js" crossorigin="anonymous"></script>
+
+    <!-- 파비콘 -->
+    <link rel="shortcut icon" href="./static/assets/house.svg" type="image/x-icon">
+    <link rel="icon" href="./static/assets/house.svg" type="image/x-icon">
+
+    <!-- 스크립트 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<script>
+    $(document).ready(function () {
+        let postid = ""
+        if (location.href.includes("?")) {
+            postid = location.href.split("?")[1].split("postid=")[1]
+        } else {
+            location.href = `/`;
+            alert("표시할 글의 아이디가 지정되어있지 않습니다.\n카드에서 다시 클릭해보세요.\n홈으로 이동합니다.")
+        }
+        if (document.cookie.includes("user_id=")) {
+            login = true
+            if (document.cookie.split("user_id=")[1].includes(";")) {
+                id = document.cookie.split("user_id=")[1].split(";")[0].replace(" ", "")
+            } else {
+                id = document.cookie.split("user_id=")[1].replace(" ", "")
+            }
+            let userinfo = ""
+            $.ajax({
+                url: "/User",
+                method: "POST",
+                data: {
+                    id: id
+                },
+                success: function (response) {
+                    name = response.nickname
+                    //목록 가져오기
+                    $.ajax({
+                        url: "/Write",
+                        method: "POST",
+                        data: {
+                            "Author": id
+                        },
+                        success: function (response) {
+                            response.forEach(element => {
+                                let now = new Date()
+
+                                let year = now.getFullYear()
+                                let month = now.getMonth()
+                                let day = now.getDate()
+                                let hours = now.getHours() + 9
+                                let minutes = now.getMinutes()
+                                let seconds = now.getSeconds()
+
+                                let nowdate = new Date(year, month, day, hours, minutes, seconds)
+
+                                let chai = nowdate.getTime() - new Date(element.Created_At).getTime()
+                                let a = ""
+
+                                let wmon = element.Created_At.split("-")[1]
+                                let wday = element.Created_At.split("-")[2].split("T")[0]
+
+                                if (chai < 1000 * 60)
+                                    a += '방금'
+                                else if (chai < 1000 * 60 * 60)
+                                    a += Math.floor(chai / (1000 * 60)) + '분 전';
+                                else if (chai < 1000 * 60 * 60 * 24)
+                                    a += Math.floor(chai / (1000 * 60 * 60)) + '시간 전';
+                                else if (chai < 1000 * 60 * 60 * 24 * 30)
+                                    a += Math.floor(chai / (1000 * 60 * 60 * 24)) + '일 전';
+                                else if (chai < 1000 * 60 * 60 * 24 * 30 * 12)
+                                    a += Math.floor(chai / (1000 * 60 * 60 * 24 * 30)) + '달 전';
+                                else
+                                    a += Math.floor(chai / (1000 * 60 * 60 * 24 * 30 * 12)) + '년 전';
+
+
+                                if (postid == element.Created_At) {
+                                    addCard(element)
+                                }
+                            });
+                        }
+                    })
+                }
+            })
+
+        } else {
+            if (location.href.includes("?")) {
+                loc = location.href.split("?")[1].split("postid=")[1]
+                location.href = `/Login?loc = write/detail?postid=${loc}`
+            } else {
+                location.href = `/Login?loc = `;
+            }
+            login = false
+            alert("로그인이 필요합니다.")
+        }
+    })
+
+    function addCard(element) {
+        console.log(element)
+        let wyear = element.Created_At.split("-")[0]
+        let wmon = element.Created_At.split("-")[1]
+        let wday = element.Created_At.split("-")[2].split("T")[0]
+
+        let Date = wyear + "년 " + wmon + "월 " + wday + "일"
+        let people_meet = ""
+        let image = ""
+        let card = ""
+        if (element.People_meet == "None") {
+            people_meet = "없음"
+        } else {
+            people_meet = element.People_meet
+        }
+
+        if (element.AttachFiles == "null" || element.AttachFiles == "") {
+            card = Card(element.Name, element.AREA_ADR, people_meet, Date, element.Feel, element.Description)
+        } else {
+            card = CardI(element.Name, element.AREA_ADR, people_meet, image, Date, element.Feel, element.Description)
+        }
+
+        $('#main').prepend(card)
+    }
+
+    function Delete() {
+        let created_At = location.href.split("?")[1].split("postid=")[1]
+        $.ajax({
+            url: '/Write',
+            method: "DELETE",
+            data: {
+                'id': id,
+                'Created_At': created_At
+            },
+            success: function (response) {
+                location.href = "/"
+                alert("글을 삭제했습니다.")
+            }
+        })
+    }
+
+    function CardI(name, adr, people_meet, image, date, feel, desc) {
+
+        return `<section class="revise_wrap">
+                    <div>
+                        <h1>${name}</h1>
+                    </div>
+                    <div class="content">
+                        <p>${adr}</p>
+                        <p>${people_meet}</p>
+                        <article>
+                            <div class="picture">
+                                <img src="${image}" alt="메뉴의 마이페이지 아이콘">
+                            </div>
+                            <p>${date}</p>
+                            <p>기분 : ${feel}</p>
+                            <div class="comment">
+                                ${desc}
+                            </div>
+                            <div class="btn">
+                                <input type="submit" class="submit" value="수정">
+                                <a onclick="Delete()"><input type="submit" class="submit" value="삭제" style="background-color: #FF774D"></a>
+                            </div>
+                        </article>
+                    </div>    
+                </section>`
+    }
+    function Card(name, adr, people_meet, date, feel, desc) {
+
+        return `<section class="revise_wrap">
+                <div>
+                    <h1>${name}</h1>
+                </div>
+                <div class="content">
+                    <p>${adr}</p>
+                    <p>${people_meet}</p>
+                    <article>
+                        <p>${date}</p>
+                        <p>기분 : ${feel}</p>
+                        <div class="comment">
+                            ${desc}
+                        </div>
+                        <div class="btn">
+                            <input type="submit" class="submit" value="수정">
+                            <a onclick="Delete()"><input type="submit" class="submit" value="삭제" style="background-color: #FF774D"></a>
+                        </div>
+                        
+                    </article>
+                </div>    
+            </section>`
+    }
+</script>
+
+<body>
+    <div class="wrap">
+        <!-- 헤더 시작 -->
+        <header class="header">
+            <div class="top_align">
+                <!-- 네비 시작 -->
+                <nav>
+                    <ul>
+                        <li><a href="/map">지도보기</a></li>
+                        <li><a href="/write/1?post_page=0">기록하기</a></li>
+                        <li><a href="/rank">랭킹보기</a></li>
+                        <li><a href="/Mypage">마이페이지</a></li>
+                    </ul>
+                </nav>
+                <!-- 네비 끝 -->
+                <!-- 로고 시작 -->
+                <div class="top_logo">
+                    <div class="simbol">
+                        <i class="fa-solid fa-house-user"></i>
+                    </div>
+                    <h1>DAILY LOG</h1>
+                </div>
+                <!-- 로고 끝 -->
+                <!-- 모바일용 햄버거 -->
+                <div class="nav_toogleBT">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                <!-- 아이콘 시작 -->
+                <div class="top_icon">
+                    <a onclick="location.href='/Mypage/Like'"><img src="../static/assets/like.png"
+                            alt="메뉴의 좋아요 아이콘"></a>
+                    <a href="/Mypage"><img src="../static/assets/mypage.png" alt="메뉴의 마이페이지 아이콘"></a>
+                </div>
+                <!-- 아이콘 끝 -->
+            </div>
+        </header>
+    </div>
+    <!-- 헤더 끝 -->
+
+    <!-- 메인 시작 -->
+    <main id="main">
+        <section class="revise_wrap">
+            <div>
+                <h1>오늘 제일 햅삐한 하루 <3 </h1>
+            </div>
+            <div class="content">
+                <p>제주도</p>
+                <p>하니, 다니엘, 민지 등</p>
+                <article>
+                    <div class="picture">
+                        <img src="../static/assets/newjeans.png" alt="메뉴의 마이페이지 아이콘">
+                    </div>
+                    <p>2022년 11월 30일</p>
+                    <p>맑음 일식</p>
+                    <div class="comment">
+                        내가 만든 쿠키 너를 위해 구웠지But you know that it ain't for free, yeah내가 만든 쿠키너무 부드러우니자꾸만 떠오르니널
+                        choco-chip으로Sprinkle로입맛 버리게 만들고 싶어숨기고 있지만 널 더 보고 싶어If you want itYou can get itIf you want it네
+                        목소리를 또 들려줘 boy식사는 없어 마음속을 녹이지So good, yeahLooking at my cookie역시 향기부터 다르니 (Taste it)한입은 모자라니널
+                        choco-chip으로Sprinkle로정신 못 차리게 만들고 싶어숨기고 있지만 널 더 보고 싶어If you want itYou can get itIf you want it
+                    </div>
+                    <div class="btn">
+                        <input type="submit" class="submit" value="수정">
+                        <input type="submit" class="submit" value="삭제" style="background-color: #FF774D">
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- 메인 끝 -->
+
+    <!-- 푸터 시작 -->
+    <footer class="footer">
+        <div class="bottom_wrap">
+            <div class="bottom_simbol">
+                <i class="fa-solid fa-house-user"></i>
+            </div>
+            <div class="bottom_info">
+                <span>Copyright 2022 . DAILYLOG . All Rights Reserved .</span>
+                <span>전체서비스 이용약관 개인정보처리방침 통합검색 고객센터 © DAILY LOG</span>
+            </div>
+        </div>
+    </footer>
+    <!-- 푸터 끝 -->
+
+    <!-- Channel Plugin Scripts -->
+    <script>
+        (function () {
+            var w = window;
+            if (w.ChannelIO) {
+                return (window.console.error || window.console.log || function () { })('ChannelIO script included twice.');
+            }
+            var ch = function () {
+                ch.c(arguments);
+            };
+            ch.q = [];
+            ch.c = function (args) {
+                ch.q.push(args);
+            };
+            w.ChannelIO = ch;
+            function l() {
+                if (w.ChannelIOInitialized) {
+                    return;
+                }
+                w.ChannelIOInitialized = true;
+                var s = document.createElement('script');
+                s.type = 'text/javascript';
+                s.async = true;
+                s.src = 'https://cdn.channel.io/plugin/ch-plugin-web.js';
+                s.charset = 'UTF-8';
+                var x = document.getElementsByTagName('script')[0];
+                x.parentNode.insertBefore(s, x);
+            }
+            if (document.readyState === 'complete') {
+                l();
+            } else if (window.attachEvent) {
+                window.attachEvent('onload', l);
+            } else {
+                window.addEventListener('DOMContentLoaded', l, false);
+                window.addEventListener('load', l, false);
+            }
+        })();
+        ChannelIO('boot', {
+            "pluginKey": "950a4eb1-7a2f-4a84-a308-242e60634b09" //please fill with your plugin key
+        });
+    </script>
+    <!-- End Channel Plugin -->
+
+</body>
+
+</html>

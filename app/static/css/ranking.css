@@ -1,0 +1,219 @@
+.ranking_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15rem 0 8rem 0;
+}
+
+.ranking_text {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.ranking_text h1 {
+    width: 60%;
+    font-size: 3rem;
+    font-weight: 500;
+    line-height: 3rem;
+    color: #F8774A;
+    margin: auto;
+}
+
+.ranking_text h4 {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #515151;
+    opacity: 60%;
+    margin: 1rem;
+}
+
+.ranking_category ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.ranking_category ul li {
+    color: #F8774A;
+    border: 1.5px dotted #F8774A;
+    border-radius: 1.5rem;
+    padding: 0.9rem 3.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+    margin-right: 0.8rem;
+}
+
+.ranking_category ul li:hover {
+    box-shadow: 2px 2px #F8774A, 3px 3px #F8774A, 4px 4px #F8774A;
+    transform: translateX(0.2rem);
+}
+
+/* card 3개*/
+.ranking_card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 95vh;
+}
+
+.ranking_text2 {
+    position: relative;
+    top: -13.5rem;
+    text-align: center;
+}
+
+.ranking_text2 h2{
+    font-size: 2rem;
+    color: #515151;
+}
+
+.ranking_text2 h4{
+    font-size: 1.2rem;
+    color: #515151;
+}
+
+.ranking_text2 p{
+    font-size: 1.3rem;
+    color: #515151;
+}
+
+.square{
+    width: 20rem;
+    height: 20rem;
+    position: relative;
+}
+
+.square span{
+    position: absolute;
+    width: inherit;
+    height: 100%;
+    border-radius: 40% 60% 65% 35% / 40% 45% 55% 60%;
+    transition: 0.5s;
+}
+
+.square span:nth-child(1){
+    animation: circle 6s linear infinite;
+    opacity: 0.3;
+    background-color: #B4D2FF;
+}
+
+.square span:nth-child(2){
+    animation: circle 4s linear infinite;
+    animation-direction: reverse;
+    opacity: 0.5;
+    background-color: #FFCF87;
+}
+
+.square span:nth-child(3){
+    animation: circle 10s linear infinite;
+    opacity: 0.8;
+    background-color: #F8774A;
+}
+
+.square:hover span:nth-child(1){
+    background-color: #F8774A;
+    border: none;
+    opacity: 0.3;
+    cursor: pointer;
+    color: #fff;
+}
+
+.square:hover span:nth-child(2){
+    background-color: #B4D2FF;
+    border: none;
+    opacity: 0.6;
+    cursor: pointer;
+    color: #fff;
+}
+
+.square:hover span:nth-child(3){
+    background-color: #FFCF87;
+    border: none;
+    opacity: 0.8;
+    cursor: pointer;
+    color: #fff;
+}
+
+@keyframes circle{
+    0%{
+        transform:rotate(0);
+    }
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
+
+/* 반응형 */
+@media(max-width:767px) and (min-width:320px) {
+
+    .square{
+        width: 18rem;
+    }
+
+    .top_logo a i {
+        display: block;
+        position: absolute;
+        font-size: 2rem;
+        top: 2rem;
+        right: 1.8rem;
+        color: #515151;
+        z-index: 999;
+    }
+
+    .ranking_text {
+        width: 90%;
+        text-align: center;
+        padding: 1rem;
+        margin: auto;
+        z-index: -1;
+    }
+
+    .ranking_text h1 {
+        width: 60%;
+        font-size: 2.5rem;
+    }
+
+    .ranking_text h4 {
+        width: 60%;
+        margin: auto;
+        padding: 1rem;
+    }
+
+    .ranking_card{
+        width: 100%;
+        margin-top: 23rem;
+    }
+
+    .ranking_section {
+        padding-top: 10rem;
+    }
+
+    #ranking_card {
+        flex-direction: column;
+    }
+
+    .ranking_category {
+        margin: auto;
+        width: 60%;
+        justify-content: center;
+
+    }
+
+    .ranking_category ul li {
+        padding: 0.9rem 5.5%;
+        margin-left: 0.3rem;
+        margin-right: 0.3rem;
+        width: 60%;
+
+    }
+
+    .ranking_category ul {
+        margin: auto;
+        display: flex;
+        align-items: center;
+
+    }
+}

@@ -1,0 +1,453 @@
+.circle {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    margin: -50px 0 0 -50px;
+    background: #CB4B16;
+    border-radius: 80%;
+    backface-visibility: hidden;
+}
+
+.main_visual {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.banner_wrap span img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 장소 */
+.map_wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFF6E9;
+    height: 100%;
+    justify-content: center;
+}
+
+.map_text p {
+    font-size: 1rem;
+    opacity: 50%;
+    color: #F8774A;
+}
+
+.map_text h3 {
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: -0.1rem;
+}
+
+.map_text h3:nth-child(3) {
+    color: #F8774A;
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+
+.map_box {
+    width: 60%;
+    height: 31rem;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 2.25rem;
+}
+
+.map_header {
+    height: 3rem;
+    position: relative;
+    width: 100%;
+    background: #e6e6e6;
+    border-radius: 2.25rem;
+}
+
+.map_header span {
+    position: absolute;
+    top: 1.1rem;
+    left: 4rem;
+}
+
+.map_header span:nth-child(1) {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    background-color: lightcoral;
+}
+
+.map_header span:nth-child(2) {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    transform: translateX(130%);
+    background-color: lightskyblue;
+}
+
+.map_header span:nth-child(3) {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    transform: translateX(300%);
+    background-color: lightgreen;
+}
+
+.map_section {
+    margin-top: 3rem;
+}
+
+.map_img  {
+    width: 100%;
+}
+
+#map_module {
+    width: 90%;
+    height: 20rem;
+    margin: auto;
+    border-radius: 1rem;
+}
+
+/* 음식 */
+.food_wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFCF87;
+    height: 100%;
+    justify-content: center;
+}
+
+.food_text p {
+    font-size: 1rem;
+    opacity: 50%;
+    color: #e30f3d;
+}
+
+.food_text h3 {
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: -0.1rem;
+}
+
+.food_text h3:nth-child(3) {
+    color: #e30f3d;
+}
+
+.food_text h5 {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: -0.1rem;
+    color: #e30f3d;
+}
+
+.food_img img {
+    width: 70%;
+    padding-top: 0.3rem;
+    animation: vibration2 10s infinite;
+}
+
+@keyframes vibration2 {
+  from {
+    transform: rotate(10deg);
+  }
+  to {
+    transform: rotate(-10deg);
+  }
+}
+
+/* 연락 */
+.phone_wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(189, 244, 189);
+    height: 100%;
+    justify-content: center;
+}
+
+.phone_wrap p {
+    font-size: 1rem;
+    opacity: 50%;
+    color: rgb(0, 129, 0);
+}
+
+.phone_wrap h3 {
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: -0.1rem;
+}
+
+.phone_wrap h3:nth-child(3) {
+    color: rgb(0, 129, 0);
+}
+
+.phone_wrap h5 {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: -0.1rem;
+    color:  rgb(0, 129, 0);
+}
+
+/* Mobile iPhone Mockup */
+.phone_main {
+    margin: 3.1rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid #ddd;
+    width: 80%;
+    height: 16rem;
+}
+
+.phone_name img {
+    width: 20%;
+    margin: auto;
+}
+
+.phone_name div h5 {
+    font-size: 1rem;
+    margin-right: 0.3rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #FF774D;
+}
+
+.phone_name div h6 {
+    font-size: 0.6rem;
+    margin-right: 0.3rem;
+    cursor: pointer;
+    font-weight: 300;
+    color: #FF774D;
+}
+
+.mockup-container {
+    text-align: center;
+}
+
+.mockup {
+    display: inline-block;
+    position: relative;
+    margin: 1.2rem;
+}
+
+.mobile-mockup {
+    position: relative;
+    border: 0.06rem solid #ddd;
+    width: 12.4rem;
+    height: 23.6rem;
+    border-radius: 1.7rem;
+    background-color: #fff;
+    animation: vibration .2s infinite;
+}
+
+@keyframes vibration {
+  from {
+    transform: rotate(0.3deg);
+  }
+  to {
+    transform: rotate(-0.3deg);
+  }
+}
+
+.iframe-url {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -49%);
+    border: 1px solid #ddd;
+    width: 24rem;
+    height: 43.1rem;
+}
+
+.iframe-url iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.home-btn {
+    height: 4.2rem;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.home-btn span {
+    border: 1px solid #ddd;
+    width: 3.1rem;
+    height: 3.1rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 6px;
+    border-radius: 50%;
+}
+
+.home-btn span:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 97%;
+    height: 97%;
+    border-radius: 50%;
+    box-shadow: inset 0 0 5px #eee;
+}
+
+.power {
+    width: 0.3rem;
+    height: 2.5rem;
+    position: absolute;
+    left: 99.7%;
+    top: 7.2rem;
+}
+
+.power span {
+    background-color: #fff;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 0 0.25rem 0.25rem 0;
+    box-shadow: inset 0 0 5px #eee;
+}
+
+.camera {
+    height: 5rem;
+    position: absolute;
+    width: 100%;
+}
+
+.camera span {
+    position: absolute;
+    background-color: #000;
+}
+
+.camera span {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    top: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 명언 */
+.saying_warp {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+    background-color: hsl(202, 100%, 77%);
+    height: 100%;
+    align-items: center;
+}
+
+.saying_img img{
+    width: 20%;
+    margin: auto;
+    position: relative;
+    top:-10rem;
+    z-index: 55;
+}
+
+.saying_text {
+    width: 50%;
+    position: absolute;
+    z-index: 555;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #fff;
+    align-items: center;
+}
+
+.saying_text h3 {
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: -0.1rem;
+    color:#1877F2;
+    margin-bottom:1rem;
+}
+
+.saying_text p {
+    font-size: 1rem;
+    font-weight: 100;
+    letter-spacing: -0.1rem;
+    color:#1877F2;
+}
+
+.saying_text p:nth-child(3) {
+    font-weight: 400;
+    margin-top: 0.3rem;
+}
+
+
+
+@media(min-width:768px) and (max-width:1024px) {}
+
+@media(max-width:767px) and (min-width:320px) {
+
+    .top_logo h1{
+        display: block;
+        font-size: 2rem;
+        margin-right: 2.6rem;
+        margin-top: -1.2rem;
+    }
+
+    .top_logo i {
+        display: block;
+        position: absolute;
+        font-size: 2rem;
+        top: 2rem;
+        right: 2rem;
+    }
+
+    .map_box {
+        width: 20rem;
+        height: 24rem;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 2.25rem;
+        padding-left: 1rem;
+    }
+
+    .map_header {
+        margin-left: -0.3rem;
+    }
+
+    .map_header span {
+        position: absolute;
+        top: 1rem;
+        left: 2rem;
+        bottom: 1rem;
+    }
+
+    #map_module {
+        height: 15rem;
+        margin: auto;
+        border-radius: 1rem;
+    }
+
+    .food_img img{
+        width: 100%;
+    }
+
+    .saying_img img, .saying_text h3 {
+        display: none;
+    }
+
+    .saying_text{
+        width: 70%;
+    }
+
+    .saying_text p {
+        width: 100%;
+        font-size: 1rem;
+    }
+}

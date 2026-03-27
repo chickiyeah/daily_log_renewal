@@ -1,0 +1,440 @@
+.map_wrap {
+    padding: 8rem 0 2rem;
+    text-align: center;
+}
+
+.map_section {
+    margin: 7rem 0 3rem 0;
+}
+
+.map_section input {
+    width: 30rem;
+    height: 1rem;
+    font-size: 0.8rem;
+    border: 1px solid #515151;
+    padding: 1rem;
+    border-radius: 2rem;
+    opacity: 30%;
+    margin-right: 0.3rem;
+}
+
+.map_top input {
+    background-color: #fff6e9;
+}
+
+.map_top2 {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 0.8rem;
+    text-align: center;
+    justify-content: space-around;
+}
+
+.search_btn {
+    width: 5rem;
+    font-size: 0.8rem;
+    padding: 1rem;
+    border-radius: 2rem;
+    background-color: #FF774D;
+    color: white;
+}
+
+.form-check {
+    margin-left: 5rem;
+}
+
+.today-check {
+    width: 15%;
+}
+
+.today-check input {
+    width: 100%;
+    background-color: #fff6e9;
+    margin-left: -53rem;
+}
+
+.form-check input {
+    width: 2rem;
+}
+
+.form-check input,
+label {
+    padding-bottom: 0.8rem;
+}
+
+.feel-check {
+    margin-left: -55rem;
+}
+
+.map_section label {
+    font-size: 0.8rem;
+    opacity: 80%;
+    display: inline-block;
+    margin-right: 2rem;
+    margin-top: 3rem;
+}
+
+/* 지도 모니터 */
+.map_box {
+    width: 100%;
+    height: 40rem;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 2.25rem;
+    margin-bottom: 5rem;
+}
+
+.map_header {
+    height: 3rem;
+    position: relative;
+    width: 100%;
+    background: #e6e6e6;
+    border-radius: 2.25rem;
+}
+
+.map_header span {
+    position: absolute;
+    top: 1.2rem;
+    left: 4rem;
+}
+
+.map_nav {
+    position: relative;
+    opacity: 25%;
+    top: 1rem;
+    left: -28rem;
+}
+
+.map_nav i {
+    margin-right: 1rem;
+}
+
+.map_nav i:nth-child(2),
+i:nth-child(3) {
+    transform: scaleX(-1);
+}
+
+.map_header span:nth-child(1) {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    background-color: lightcoral;
+}
+
+.map_header span:nth-child(2) {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    transform: translateX(130%);
+    background-color: lightskyblue;
+}
+
+.map_header span:nth-child(3) {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    transform: translateX(300%);
+    background-color: lightgreen;
+}
+
+.map_img #map {
+    width: 90%;
+    height: 30rem;
+    border-radius: 1rem;
+    margin-top: -5rem;
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    z-index: 0;
+}
+
+.title {
+    font-weight: 600;
+    display: block;
+    letter-spacing: -0.03rem;
+}
+
+.hAddr {
+    position: absolute;
+    top: 34rem;
+    left: 23rem;
+    border-radius: 0.8rem;
+    background: #FF774D;
+    color: #fff;
+    opacity: 80%;
+    z-index: 1;
+    padding: 0.6rem;
+}
+
+#centerAddr {
+    display: block;
+    margin-top: 0.125rem;
+    font-weight: 300;
+    letter-spacing: -0.03rem;
+}
+
+.bAddr {
+    /* 수정 X */
+    margin-left: -9rem;
+    bottom: 2.5rem;
+    z-index: 9999;
+    position: absolute;
+    margin-bottom: 2rem;
+    /* 수정 X */
+    padding: 1rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    color: #515151;
+    background-color: #fff;
+    border-radius: 2rem;
+    opacity: 80%;
+
+}
+
+.bAddr span {
+    font-size: 1.1rem;
+    margin: 0.3rem;
+}
+
+.map_content {
+    width: 70rem;
+    margin: auto;
+}
+
+.select_box {
+    width: 21rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.write_select {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 0.8rem;
+}
+
+.write_select #option {
+    font-size: 0.93rem;
+    color: #515151;
+    width: 14.4rem;
+    border: 1px solid #515151;
+    padding: 0.93rem;
+    border-radius: 3.125rem;
+    opacity: 30%;
+    margin: 0 0.3125rem;
+    display: block;
+    font-size: 0.812rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+}
+
+.write_select .select ul {
+    width: 15.4rem;
+    background-color: #fff;
+    color: #909090;
+    padding: 0.63rem 0.3rem;
+    display: none;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    margin: 0.31rem;
+    position: absolute;
+    z-index: 1;
+}
+
+.write_select .select ul li {
+    cursor: pointer;
+    padding: 0.3rem;
+}
+
+/* 푸터 */
+.footer {
+    border-top: 1px solid rgb(201, 201, 201);
+}
+
+.bottom_wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 3rem;
+    opacity: 30%;
+    font-size: 0.9rem;
+}
+
+.bottom_simbol i {
+    margin-right: 0.3rem;
+}
+
+
+
+/* 반응형 */
+@media(min-width:768px) and (max-width:1024px) {
+    #searp {
+        margin-bottom: 1.25rem;
+        width: 50%;
+    }
+
+    .map_wrap {
+        width: 100%;
+        margin: auto;
+    }
+
+    .map_top2 {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 4rem;
+    }
+
+    .form-check {
+        margin-left: 10rem;
+    }
+
+    .today-check {
+        margin-left: -38rem;
+    }
+
+    .select_box {
+        margin-left: -5rem;
+    }
+
+    .map_box {
+        width: 100%;
+    }
+
+    .map_nav {
+        margin-left: 13rem;
+    }
+
+    .search_btn {
+        width: 22%;
+    }
+
+    .hAddr {
+        margin: 1rem 0 0 -14rem;
+    }
+
+    .map_content {
+        width: 80%;
+        margin: auto;
+    }
+}
+
+/* 반응형 */
+@media(max-width:767px) and (min-width:320px) {
+    .top_logo i {
+        display: block;
+        position: absolute;
+        font-size: 2rem;
+        top: 2rem;
+        right: 2rem;
+        color: #515151;
+    }
+
+    .map_top {
+        width: 66%;
+        margin: 0 auto;
+    }
+
+    .map_top input {
+        width: 87%;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 1.25rem;
+    }
+
+    .map_top2 {
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: auto;
+    }
+
+    .form-check-input {
+        width: 100%;
+        text-align: center;
+    }
+
+    .form-check {
+        width: 100%;
+        margin: auto;
+    }
+
+    .today-check{
+        width: 73%;
+        margin-bottom: 1rem;
+        margin-left: 53.5rem;
+    }
+
+    .feel-check {
+        width: 80%;
+        margin: auto;
+        margin-left: -0.7rem; 
+    }
+
+    .search_btn {
+        width: 100%;
+    }
+
+    .map_box {
+        width: 100%;
+        height: 100%;
+    }
+
+    .map_section {
+        width: 100%;
+        height: 40rem;
+        margin-top: 4rem;
+        margin-bottom: -17rem;
+    }
+
+    .map_content {
+        width: 90%;
+        margin: auto;
+    }
+
+    .map_img #map {
+        height: 38.5rem;
+        margin-top: -4rem;
+    }
+
+    .map_header span {
+        position: absolute;
+    }
+
+    .map_nav {
+        margin-left: 13rem;
+    }
+
+    .search_btn {
+        width: 100%;
+    }
+
+    .hAddr {
+        width: 60%;
+        margin: 26rem 0 0 -22.5rem;
+    }
+
+    .bAddr {
+        padding: 0.5rem;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 0.6rem;
+        color: #515151;
+        z-index: 9999;
+    }
+
+    .bAddr span {
+        font-size: 0.9rem;
+        margin: 0.3rem;
+    }
+}

@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=IBM+Plex+Sans+KR:wght@100;200;300;400;500&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Zilla+Slab:wght@300;400;500;600;700&display=swap');
+
+
+body {
+    width: 100%;
+    word-break: keep-all;
+    /*넣어주는 이유 찾아보기*/
+    overflow-x: hidden;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #fff6e9;
+}
+
+html,
+body,
+blockquote,
+hr,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+table,
+th,
+td,
+figure,
+form,
+fieldset,
+legend,
+label,
+input,
+select,
+textarea,
+button,
+ul,
+ol,
+li,
+dl,
+dt,
+dd,
+p,
+pre {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+table {
+    border: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+button {
+    cursor: pointer;
+}
+
+button,
+input,
+table,
+textarea {
+    font-family: inherit;
+    border: 0;
+}
+
+
+
+fieldset,
+iframe {
+    border: 0;
+}
+
+address,
+em {
+    font-style: normal;
+}

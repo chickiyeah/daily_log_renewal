@@ -1,0 +1,210 @@
+.write_wrap {
+    padding: 8rem 5rem 2rem;
+    text-align: center;
+}
+
+.write_section {
+    margin: 7rem 0 3rem 0;
+}
+
+.write_sub h2 {
+    padding-bottom: 1.875rem;
+}
+
+.write_sub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.write_sub div {
+    margin: 0.625rem 0;
+}
+
+.write_sub input {
+    width: 31.25rem;
+    font-size: 0.75rem;
+    border: 1px solid #515151;
+    padding: 0.93rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+}
+
+.write_sub textarea {
+    width: 31.25rem;
+    font-size: 0.75rem;
+    border: 1px solid #515151;
+    padding: 0.93rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+}
+
+.select_box {
+    width: 21rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.write_select {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 0.8rem;
+}
+
+.write_select #option {
+    font-size: 0.93rem;
+    color: #515151;
+    width: 14.4rem;
+    border: 1px solid #515151;
+    padding: 0.93rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+    margin: 0 0.3125rem;
+    display: block;
+    font-size: 0.812rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+}
+
+.write_select .select ul {
+    width: 9.4rem;
+    background-color: #fff;
+    color: #909090;
+    padding: 0.63rem 0.3rem;
+    display: none;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    margin: 0.31rem;
+    position: absolute;
+    z-index: 1;
+}
+
+.write_select .select ul li {
+    cursor: pointer;
+    padding: 0.3rem;
+}
+
+.write_select2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 0.8rem;
+}
+
+.write_select2 #option2 {
+    font-size: 0.93rem;
+    color: #515151;
+    width: 14.4rem;
+    border: 1px solid #515151;
+    padding: 0.93rem;
+    border-radius: 1.13rem;
+    opacity: 30%;
+    margin: 0 0.3rem;
+    display: block;
+    font-size: 0.8rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+}
+
+.write_select2 .select2 ul {
+    width: 9.3rem;
+    background-color: #fff;
+    color: #909090;
+    padding: 0.6rem 0.3rem;
+    display: none;
+    border: 1px solid #d1d1d1;
+    border-radius: 0.625rem;
+    margin: 0.3rem;
+    position: absolute;
+    z-index: 1;
+}
+
+.write_select2 .select2 ul li {
+    cursor: pointer;
+    padding: 0.3rem;
+}
+
+#file span {
+    font-size: 0.8rem;
+    opacity: 50%;
+}
+
+button {
+    width: 10rem;
+    font-size: 0.75rem;
+    background-color: #35B8E1;
+    color: #fff;
+    padding: 0.9rem;
+    border-radius: 1.25rem;
+    margin: 0 0.3rem;
+}
+
+@media screen and (max-width: 768px) {
+    .write_sub input {
+        width: auto;
+
+    }
+
+    .write_wrap {
+        padding: 20px;
+    }
+
+    .select_box {
+        width: auto;
+        display: block;
+    }
+
+    #textarea {
+        width: 80%;
+        margin: auto;
+    }
+
+    .write_section {
+        margin: 12rem 0 3rem 0;
+    }
+
+    .text_div {
+        width: 80%;
+        margin: auto;
+    }
+
+    .btn_div {
+        width: 100%;
+        margin: auto;
+    }
+
+    .btn_div button {
+        width: 30%;
+    }
+
+    .write_select #option {
+        width: 160.8px;
+        padding: 14.88px;
+        margin: 0px;
+
+    }
+
+    .select_box {
+        width: 192.55px;
+    }
+
+    .write_select2 #option2 {
+        width: 160.8px;
+        padding: 14.88px;
+        margin: 0px;
+    }
+
+    .write_sub input {
+        width: 160.8px;
+        font-size: 0.75rem;
+        border: 1px solid #515151;
+        padding: 14.88px;
+        border-radius: 1.125rem;
+        opacity: 30%;
+        margin: 0px;
+    }
+}

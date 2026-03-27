@@ -1,0 +1,137 @@
+.mywrite_right {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mywrite_right .label {
+    font-size: 0.9em;
+    opacity: 50%;
+    margin-bottom: 3rem;
+}
+
+.write_bt {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    /* margin-left: 42.5rem; */
+}
+
+.write_bt button {
+    font-size: 0.9rem;
+    background-color: #35B8E1;
+    color: #fff;
+    border-radius: 20px;
+    padding: 0.625rem 1.7rem;
+    margin-right: 0.187rem;
+}
+
+.write_bt button:hover {
+    background-color: #08a3d2;
+}
+
+.write_bt button:last-of-type {
+    background-color: #FF774D;
+}
+
+.write_bt button:last-of-type:hover {
+    background-color: #f86437;
+}
+
+.write_box {
+    width: 800px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.25rem 18.75rem;
+    padding: 1.875rem 1.875rem;
+    border: 1px solid rgba(146, 146, 146, 0.5);
+    border-radius: 1.875rem
+}
+
+input[type="checkbox"] {
+    width: 0.8rem;
+    height: 0.8rem
+}
+
+.write_box h2 {
+    font-size: 1.18rem;
+    margin-left: -21rem;
+}
+
+.write_box h3 {
+    font-size: 14px;
+    margin-top: 3px;
+    margin-left: -21rem;
+    font-weight: 400;
+    word-break: break-all;
+}
+
+.write_box p {
+    font-size: 0.875rem;
+    margin-top: 0.18rem;
+}
+
+.user_info {
+    font-size: 1.06rem;
+    opacity: 60%;
+}
+
+label .chkBox {
+    margin-left: -26rem;
+    cursor: pointer;
+}
+
+#footer {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 3.75rem;
+    text-align: center;
+    font-size: 0.81rem;
+    padding-bottom: 2.5rem;
+    opacity: 50%;
+}
+
+.bottom_hr {
+    margin-bottom: 3.125rem;
+    opacity: 30%;
+}
+
+@media(max-width:767px) and (min-width:320px) {
+
+        .top_logo i {
+        display: block;
+        position: absolute;
+        font-size: 2rem;
+        top: 2rem;
+        right: 2rem;
+        color: #909090;
+    }
+
+    .write_box {
+        width: 70vw;
+        margin: 1.5rem 0rem 0.55rem 0rem
+    }
+
+    .write_box h2 {
+        margin-left: -6rem;
+    }
+
+    .write_box h3 {
+        margin-left: -6rem;
+        font-size: 2px;
+    }
+
+    .mywrite_right{
+        width: 90%;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+}

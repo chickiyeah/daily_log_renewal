@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/reset.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/writestyle.css">
+    <title>DAILY LOG</title>
+
+    <script type="text/javascript">
+        var openWin
+
+        function openMap() {
+            window.name = "글쓰기"
+        }
+    </script>
+
+</head>
+<script>
+    let link = []
+    let meetl = []
+
+    function upload() {
+        ok = true
+        if (document.getElementById("title").value == '') {
+            ok = false
+            $(".title").focus()
+            alert('제목을 입력해주세요.')
+            return
+        }
+
+        if (document.getElementById("maps").value == '') {
+            ok = false
+            $(".map").focus()
+            alert('지역을 입력해주세요.')
+            //$(".map").attr('placeholder', '지역을 입력해주세요.')
+            return
+        }
+
+        if (document.getElementById("todayuser").value == '') {
+            ok = false
+            $(".todayuser").focus()
+            alert('오늘 만난 사람을 입력해주세요. 만난사람이 없는경우 없음 이라고 적어주세요.')
+            return
+        } r
+
+        if ($("#select #option").text() == '오늘의 기분') {
+            ok = false
+            $("#select #option").focus()
+            $("#select ul").toggle();
+            alert("오늘의 기분을 선택해주세요.")
+            return
+        }
+
+        if ($("#select2 #option2").text() == '오늘의 메뉴') {
+            ok = false
+            $("#select2 #option2").focus()
+            $("#select2 ul").toggle();
+            alert("오늘의 메뉴를 선택해주세요.")
+            return
+        }
+
+        if ($("#textarea").html() == '') {
+            ok = false
+            $("#textarea").focus()
+            alert("내용을 입력해주세요.")
+            return
+        }
+
+        if (document.cookie.split("id=")[1].includes(";")) {
+            id = document.cookie.split("id=")[1].split(";")[0].replace(" ", "")
+        } else {
+            id = document.cookie.split("id=")[1].replace(" ", "")
+        }
+
+        if (ok == true) {
+            if (document.getElementById("todayuser").value != "없음") {
+                json = {
+                    'Author': id,
+                    'Name': document.getElementById("title").value,
+                    'Desc': $("#textarea").html(),
+                    'People_meet': document.getElementById("todayuser").value,
+                    'Feel': $("#select #option").text(),
+                    'Eat': $("#select2 #option2").text(),
+                    'AttachFiles': link,
+                    'Area': document.getElementById("maps").value
+                }
+                console.log(json)
+                $.ajax({
+                    url: "/write/upload",
+                    method: "POST",
+                    data: json,
+                    success: function (response) {
+                        console.log(response)
+                    }
+                })
+            } else {
+                json = {
+                    'Author': id,
+                    'Name': document.getElementById("title").value,
+                    'Desc': $("#textarea").html(),
+                    'People_meet': "None",
+                    'Feel': $("#select #option").text(),
+                    'Eat': $("#select2 #option2").text(),
+                    'AttachFiles': link,
+                    'Area': document.getElementById("maps").value
+                }
+                console.log(json)
+                $.ajax({
+                    url: "/write/upload",
+                    method: "POST",
+                    data: json,
+                    success: function (response) {
+                        if (response == "OK") {
+                            location.href = "/"
+                            alert("업로드를 완료했습니다!")
+                        }
+                    }
+                })
+
+            }
+        }
+
+
+    }
+</script>
+
+<body>
+
+    <!-- 헤더 시작 -->
+    <header id="header">
+        <div>
+            <a href="/">
+                <h1>DAILY<br>LOG</h1>
+            </a>
+        </div>
+        <!-- 네비 시작 -->
+        <nav id="nav">
+            <ul>
+                <li><a href="/map">지도보기</a></li>
+                <li><a href="/write/2">기록하기</a></li>
+                <li><a href="#">랭킹보기</a></li>
+                <li><a href="#">마이페이지</a></li>
+            </ul>
+        </nav>
+        <!-- 네비 끝 -->
+        <div class="nav_icon">
+            <img src="../static/assets/search.png" alt="메뉴의 검색 아이콘">
+            <img src="../static/assets/like.png" alt="메뉴의 좋아요 아이콘">
+            <img src="../static/assets/mypage.png" alt="메뉴의 마이페이지 아이콘">
+        </div>
+    </header>
+    <div class="top_hr">
+        <hr>
+    </div>
+    <!-- 헤더 끝 -->
+
+    <!-- 메인 시작 -->
+    <main id="main">
+        <section class="content">
+            <div class="write_section">
+                <div class="write_sub">
+                    <div>
+                        <h2>오늘의 하루</h2>
+                    </div>
+                    <div>
+                        <input type="text" id="title" class="title" placeholder="제목">
+                    </div>
+                    <div>
+                        <input edit type="text" id="maps" class="maps" placeholder="지역">
+                    </div>
+                    <div>
+                        <input type="text" id="todayuser" class="todayuser" placeholder="오늘 만난 사람">
+                    </div>
+                    <div class="select_box">
+                        <div class="write_select">
+                            <div id="select" class="select">
+                                <strong></strong>
+                                <div id="option" class="feel">오늘의 기분</div>
+                                <ul>
+                                    <li data-option="맑음">맑음</li>
+                                    <li data-option="흐림">흐림</li>
+                                    <li data-option="비">비</li>
+                                    <li data-option="눈">눈</li>
+                                    <li data-option="바람">바람</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="write_select2">
+                            <div id="select2" class="select2">
+                                <div id="option2">오늘의 메뉴</div>
+                                <ul>
+                                    <li data-option="한식">한식</li>
+                                    <li data-option="일식">일식</li>
+                                    <li data-option="중식">중식</li>
+                                    <li data-option="양식">양식</li>
+                                    <li data-option="편의점">편의점</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <form action='/UploadFile' method="POST" entype="multipart/form-data">
+                            <input type="file" name="file" id="input">
+                        </form>
+                    </div>
+                    <div id="textarea" contenteditable="true">
+                    </div>
+                    <div>
+                        <button type="reset">
+                            취소
+                        </button>
+                        <button type="submit" onclick="upload()">
+                            글쓰기
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </main>
+    <!-- 메인 끝 -->
+
+    <!-- 푸터 시작 -->
+    <footer id="footer">
+        <div class="bottom_hr">
+            <hr>
+        </div>
+        <div>
+            <p>Copyright 2022 . DAILYLOG . All Rights Reserved .</p>
+            <p>전체서비스 이용약관 개인정보처리방침 통합검색 고객센터 © DAILY LOG</p>
+        </div>
+    </footer>
+    <!-- 푸터 끝 -->
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="../static/js/write.js"></script>
+    <script>
+        const inputElement = document.getElementById("input").addEventListener("change", handleFiles)
+
+        function handleFiles() {
+            const filelist = this.files
+            for (let i = 0, numFiles = filelist.length; i < numFiles; i++) {
+                let file = filelist[i]
+                let formdata = new FormData()
+                formdata.append('File', file)
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', '/UploadFile', true)
+                xhr.onload = xhr.onerror = function () {
+                    link.push(xhr.responseText)
+                    image = `<img src="${xhr.responseText}">`
+                    console.log(image)
+                    $("#textarea").append(image)
+                };
+                xhr.send(formdata)
+            }
+        }
+    </script>
+</body>
+
+</html>

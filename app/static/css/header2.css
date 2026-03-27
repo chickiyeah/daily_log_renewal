@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Zilla+Slab:wght@300;400;500;600;700&display=swap');
+
+
+body {
+    font-size: 16px;
+}
+
+/* 헤더 */
+.header {
+    width: 100%;
+    position: absolute;
+    border-bottom: 1px solid rgb(201, 201, 201);
+}
+
+.top_align {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: #515151;
+    align-items: center;
+    padding: 3rem;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    margin-left: 3rem;
+}
+
+nav ul li {
+    margin-right: 1.1rem;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: -1px;
+    transition: all 0.2s ease-in-out;
+}
+
+nav ul li:hover {
+    animation: swing 1s ease;
+    animation-iteration-count: 1;
+    font-weight: 400;
+}
+
+/* 네비 애니메이션 */
+@keyframes swing {
+    15% {
+        transform: translateX(0.5rem);
+    }
+
+    30% {
+        transform: translateX(-0.5rem);
+    }
+
+    50% {
+        transform: translateX(0.1rem);
+    }
+
+    65% {
+        transform: translateX(-0.1rem);
+    }
+
+    80% {
+        transform: translateX(0.2rem);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.top_logo {
+    display: flex;
+    align-items: center;
+    margin-left: -17rem;
+}
+
+.top_logo i {
+    font-size: 1.7rem;
+    color: #515151;
+    margin-right: 0.6rem;
+}
+
+.top_logo h1 {
+    font-family: 'Zilla Slab', serif;
+    font-weight: 300;
+}
+
+.nav_toogleBT {
+    display: none;
+}
+
+.top_icon img {
+    width: 1.3rem;
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+
+/* 푸터 */
+.footer {
+    border-top: 1px solid #d2d2d2;
+    text-align: center;
+}
+
+.bottom_wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 3rem;
+    opacity: 30%;
+    font-size: 0.9rem;
+}
+
+.bottom_simbol i {
+    margin-right: 0.3rem;
+}
+
+@media(min-width:768px) and (max-width:1024px) {
+    nav ul {
+        margin-left: 0.2rem;
+    }
+
+    .top_logo {
+        margin-left: 0.2rem;
+    }
+}
+
+@media(min-width:320px) and (max-width:767px) {
+    .nav_toogleBT {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        left: 2.2rem;
+        font-size: 2.5rem;
+    }
+
+    .top_logo i,
+    .top_logo h1,
+    .top_icon {
+        display: none;
+        cursor: pointer;
+    }
+
+    .navbar_menu {
+        display: none;
+    }
+
+    .navbar_menu.active {
+        display: block;
+        background: #515151;
+        color: #fff;
+        padding: 9.5rem;
+        position: absolute;
+        top: 0;
+        left: -3rem;
+        opacity: 80%;
+        margin-left: -2rem;
+        margin-top: -3rem;
+    }
+
+    .navbar_menu li {
+        font-size: 1.5rem;
+        font-weight: 300;
+        margin: 1.5rem;
+    }
+
+    /* 푸터 */
+    .footer {
+        margin-top: 21rem;
+    }
+}

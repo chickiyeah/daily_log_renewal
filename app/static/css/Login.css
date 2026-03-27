@@ -1,0 +1,163 @@
+#login {
+    width: 100%;
+    height: 34.375rem;
+    text-align: center;
+    margin: 6.8rem 0 0 0;
+}
+
+.small {
+    font-size: 0.625rem;
+    text-align: center;
+    color: #9B9B9B;
+    margin: 1rem;
+}
+
+article>p {
+    padding-top: 1.7rem;
+    text-align: left;
+    color: #9B9B9B;
+    font-size: 1.063rem;
+}
+
+
+h1 {
+    font-family: 'Nixie One', cursive;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+p {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+section {
+    display: block;
+    padding: 1.875rem;
+}
+
+article {
+    width: 19.375rem;
+    margin: auto;
+}
+
+article>p {
+    padding-top: 1.25rem;
+    text-align: left;
+    color: #9B9B9B;
+    font-size: 0.7rem;
+    margin-bottom: 0.3rem;
+}
+
+.email_input {
+    width: 17.5rem;
+    height: 2.188rem;
+    background-color: #fff;
+    writing-mode: horizontal-tb !important;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0rem;
+    text-shadow: none;
+    text-align: start;
+    appearance: auto;
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.625rem;
+    line-height: 1.42857143;
+    color: #555;
+    background-image: none;
+    border: 1px solid #ccc;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    display: block;
+    outline: none;
+    border-radius: 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.42857143;
+
+}
+
+.no_email {
+    text-align: right;
+    font-size: 0.7rem;
+    color: #35B8E1;
+    padding-top: 0.063rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.05rem;
+}
+
+.submit {
+    width: 19.375rem;
+    height: 3.125rem;
+    display: block;
+    outline: none;
+    border-radius: 1.875rem;
+    background-color: #33B3FF;
+    color: white;
+    border: none;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.nosign {
+    color: #515151;
+    font-size: 0.75rem;
+    text-align: center;
+    margin: auto;
+    letter-spacing: -0.05rem;
+}
+
+.signup {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #33B3FF;
+    font-size: 0.75rem;
+}
+
+#password {
+    padding-top: 0rem;
+}
+
+.form-check-label {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #515151;
+    font-size: 0.625rem;
+}
+
+.form-check {
+    text-align: left;
+    text-justify: auto;
+    width: 18.75rem;
+    display: inline-block;
+    padding-top: 0.313rem;
+}
+
+.SocialLogin {
+    margin-top: 2rem;
+    padding-top: 0.5rem;
+    border-top: 1px ridge #515151;
+    width: 19.375rem;
+    height: 3.125rem;
+}
+
+.SocialLogin .social_icon {
+    width: 3rem;
+    height: 3rem;
+    align-self: center;
+    border-radius: 1rem;
+    margin-left: 0.5rem;
+}
+
+
+@media(min-width:768px) and (max-width:1024px) {}
+
+@media(max-width:767px) and (min-width:320px) {
+
+
+    #login {
+        width: 85%;
+    }
+}

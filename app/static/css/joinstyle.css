@@ -1,0 +1,66 @@
+body {
+    width: 123.75rem;
+    margin: auto;
+    color: #515151;
+}
+
+h1 {
+    font-family: 'Zilla Slab', serif;
+    font-weight: 400;
+    text-align: center;
+    margin: 6.25rem;
+}
+
+p {
+    text-align: center;
+    font-size: 0.75rem;
+    margin-top: -5.625rem;
+    opacity: 50%;
+}
+
+.content {
+    width: 53.75rem;
+    margin: 0 auto;
+    padding: 3.125rem 0 3.125rem 0;
+}
+
+.join_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.join_section div {
+    margin: 0.625rem 0;
+}
+
+.join_section label {
+    font-size: 0.75rem;
+    opacity: 50%;
+    display: block;
+    padding-bottom: 0.375rem;
+}
+
+.join_section input {
+    width: 18.75rem;
+    font-size: 0.75rem;
+    border: 0.063rem solid #515151;
+    padding: 0.938rem;
+    border-radius: 1.125rem;
+    opacity: 50%;
+    border-color:black;
+    color: black !important;
+}
+
+.join_section input::placeholder {
+    color :black
+}
+
+button {
+    width: 20.625rem;
+    font-size: 0.75rem;
+    background-color: #35B8E1;
+    color: #fff;
+    padding: 0.938rem;
+    border-radius: 1.25rem;
+}

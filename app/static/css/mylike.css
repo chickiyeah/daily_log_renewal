@@ -1,0 +1,55 @@
+.mylike_wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 18rem 0 8rem 0;
+}
+
+.mylike_left ul li {
+    font-size: 15px;
+    margin-bottom: 7px;
+}
+
+.mylike_left ul li:hover {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.mylike_left ul li:nth-child(5) {
+    margin-top: 20px;
+    opacity: 50%;
+}
+
+.mylike_right {
+    margin: auto;
+    width: 75%;
+    text-align: center;
+}
+
+.mylike_card {
+    display: inline;
+    padding: 1rem;
+}
+
+.mylike_right img {
+    width: 25%;
+    object-fit: cover;
+    margin: 1rem;
+}
+
+/* 반응형 */
+@media(max-width:767px) and (min-width:320px) {
+
+        .top_logo i {
+        display: block;
+        position: absolute;
+        font-size: 2rem;
+        top: 2rem;
+        right: 2rem;
+        color: #909090;
+    }
+
+    .mylike_card {
+    width: 100%;
+    }
+}

@@ -1,0 +1,55 @@
+.mypage_section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16rem 0 8rem 0;
+}
+
+.mypage_left {
+    display: flex;
+    flex-direction: column;
+    margin-left: 5.9rem;
+}
+
+.mypage_left ul li {
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+.mypage_left ul li:hover {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.mypage_left ul li:nth-child(5) {
+    margin-top: 1.25rem;
+    opacity: 50%;
+}
+
+@media screen and (max-width: 768px) {}
+
+@media(min-width:320px) and (max-width:767px) {
+    .mypage_left {
+        position: absolute;
+        top: 9rem;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1rem 0 1rem 3.1rem;
+    }
+
+    .mypage_left ul {
+        display: flex;
+    }
+
+    .mypage_left ul li {
+        margin: 0.5rem;
+    }
+
+    .mypage_left ul li:nth-child(5) {
+        display: none;
+    }
+
+    .mypage_left ul li:hover {
+        font-weight: 600;
+    }
+}

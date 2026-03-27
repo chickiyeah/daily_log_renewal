@@ -1,0 +1,26 @@
+.hAddr {
+    position: absolute;
+    top: 34rem;
+    left: 23rem;
+    border-radius: 0.8rem;
+    background: #FF774D;
+    color: #fff;
+    opacity: 80%;
+    z-index: 1;
+    padding: 0.6rem;
+}
+
+.bAddr {
+    /* 수정 X */
+    margin-left: -9rem;
+    bottom: 2.5rem;
+    z-index: 9999;
+    position: absolute;
+    margin-bottom: 2rem;
+    /* 수정 X */
+    background-color: #F8774A;
+    border-radius: 1rem;
+    padding: 0.6rem;
+    opacity: 85%;
+    color: #fff;
+}

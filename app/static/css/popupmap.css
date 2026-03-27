@@ -1,0 +1,79 @@
+.map_wrap {
+    position: relative;
+    width: 96%;
+    height: 31rem;
+}
+
+.title {
+    font-weight: bold;
+    display: block;
+}
+
+.hAddr {
+    position: absolute;
+    left: 0.625rem;
+    top: 0.625rem;
+    border-radius: 0.125rem;
+    background: #fff;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 1;
+    padding: 0.3125rem;
+}
+
+#centerAddr {
+    display: block;
+    margin-top: 0.125rem;
+    font-weight: normal;
+}
+
+.bAddr {
+    padding: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#sel {
+    margin: 1.25rem;
+    border: 0.06rem solid #515151;
+    padding: 1.1rem 1.6rem;
+    border-radius: 1.1rem;
+    background: #fff;
+    text-align: center;
+    font-weight: 600;
+}
+
+.input {
+    width: 13.75rem;
+    height: 0.625rem;
+    font-size: 0.75rem;
+    border: 0.0625rem solid #515151;
+    padding: 0.9375rem;
+    border-radius: 1.875rem;
+    margin-right: 0.3125rem;
+    margin-top: 0.025rem;
+}
+
+.search_btn {
+    width: 5rem;
+    height: 2.625rem;
+    font-size: 0.75rem;
+    padding: 0.625rem;
+    border-radius: 1.25rem;
+    background-color: #35B8E1;
+    color: white;
+
+}
+
+.map_top {
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1rem;
+}
+
+#map_buttom {
+    margin: auto;
+    display: table;
+
+}

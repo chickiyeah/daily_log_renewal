@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=IBM+Plex+Sans+KR:wght@100;200;300;400;500&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Zilla+Slab:wght@300;400;500;600;700&display=swap');
+
+body {
+    width: 123.75rem;
+    margin: auto;
+    color: #515151;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    margin: 1.875rem 6.25rem;
+    width: 100%;
+}
+
+h1 {
+    font-family: 'Zilla Slab', serif;
+    font-weight: 400;
+}
+
+#nav {
+    display: flex;
+    align-items: center;
+}
+
+#nav ul {
+    display: flex;
+    flex-direction: row;
+    margin-left: -30rem;
+}
+
+#nav ul li {
+    margin-right: 1.875rem;
+    font-size: 0.938rem;
+    letter-spacing: -0.063rem;
+}
+
+.nav_icon {
+    display: flex;
+    align-items: center;
+    margin-right: 14.375rem;
+}
+
+/* %는 자동 간격 조정됨. */
+.nav_icon img {
+    width: 1.25rem;
+    margin-right: 0.938rem;
+}
+
+.top_hr {
+    position: relative;
+    top: 8.438rem;
+    opacity: 30%;
+}
+
+#main {
+    position: relative;
+    top: 12.5rem;
+}
+
+.join_section h2 {
+    font-family: 'Noto Sans KR', sans-serif;
+    text-align: center;
+    font-weight: 400;
+    letter-spacing: -0.063rem;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 53.75rem;
+    margin: 0 auto;
+    padding: 3.75rem 0 0 0;
+}
+
+.write_sub h2 {
+    padding-bottom: 1.875rem;
+}
+
+.write_sub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.write_sub div {
+    margin: 10px 0;
+}
+
+.write_sub input {
+    width: 31.25rem;
+    font-size: 0.75rem;
+    border: 0.063rem solid #515151;
+    padding: 0.938rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+}
+
+.write_sub textarea {
+    width: 31.25rem;
+    font-size: 0.75;
+    border: 0.063rem solid #515151;
+    padding: 0.938rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+}
+
+.select_box {
+    width: 20.938rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.write_select {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 0.813rem;
+}
+
+.write_select #option {
+    font-size: 0.938rem;
+    color: #515151;
+    width: 14.375rem;
+    border: 0.063rem solid #515151;
+    padding: 0.938rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+    margin: 0 0.313rem;
+    display: block;
+    font-size: 0.813rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+}
+
+.write_select .select ul {
+    width: 9.375rem;
+    background-color: #fff;
+    color: #909090;
+    padding: 0.625rem 0.313rem;
+    display: none;
+    border: 0.063rem solid #d1d1d1;
+    border-radius: 0.625rem;
+    margin: 0.313rem;
+    position: absolute;
+    z-index: 1;
+}
+
+.write_select .select ul li {
+    cursor: pointer;
+    padding: 0.313rem;
+}
+
+.write_select2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 0.813rem;
+}
+
+.write_select2 #option2 {
+    font-size: 0.938;
+    color: #515151;
+    width: 14.375rem;
+    border: 0.063rem solid #515151;
+    padding: 0.938rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+    margin: 0 0.313rem;
+    display: block;
+    font-size: 0.813rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+}
+
+.write_select2 .select2 ul {
+    width: 9.375rem;
+    background-color: #fff;
+    color: #909090;
+    padding: 0.625rem 0.313rem;
+    display: none;
+    border: 0.063rem solid #d1d1d1;
+    border-radius: 0.625;
+    margin: 0.313rem;
+    position: absolute;
+    z-index: 1;
+}
+
+.write_select2 .select2 ul li {
+    cursor: pointer;
+    padding: 5px;
+}
+
+button {
+    width: 10rem;
+    font-size: 0.75rem;
+    background-color: #35B8E1;
+    color: #fff;
+    padding: 0.938rem;
+    border-radius: 1.25rem;
+    margin: 0 0.313rem;
+}
+
+#footer {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 15.625rem;
+    text-align: center;
+    font-size: 0.813rem;
+    padding-bottom: 2.5rem;
+    opacity: 50%;
+}
+
+.bottom_hr {
+    margin-bottom: 3.125rem;
+    opacity: 30%;
+}

@@ -1,0 +1,70 @@
+.session_right {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-bottom: 10rem;
+}
+
+.session_article {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.session_article div h5,
+p {
+    margin: auto;
+    font-size: 0.81rem;
+    margin-top: 0.18rem;
+    opacity: 3.125rem;
+}
+
+.session_article p {
+    margin-bottom: 1.25rem;
+}
+
+.session_text {
+    width: 80%;
+    border-bottom: 1px solid #d7d7d7;
+    text-align: left;
+    opacity: 70%;
+}
+
+.session_article div {
+    margin: 1rem 0 0 0;
+}
+
+.session_article label {
+    font-size: 0.75rem;
+    opacity: 50%;
+    display: block;
+    padding-bottom: 0.375rem;
+}
+
+.session_article input {
+    width: 20rem;
+    font-size: 0.69rem;
+    border: 1px solid #515151;
+    padding: 1rem;
+    border-radius: 1.125rem;
+    opacity: 30%;
+}
+
+.session_article button {
+    width: 22rem;
+    font-size: 0.75rem;
+    background-color: #FF774D;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 1.25rem;
+}
+
+.socialre {
+    text-align: center;
+}
+
+.session_article button:hover {
+    background-color: #f86437;
+}
