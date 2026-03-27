@@ -227,6 +227,8 @@ async def upload_file(file: UploadFile = File(...)):
     return f"/static/uploads/{file_name}"
 
 # 2. 일기 작성 API
+# app/main.py
+
 @app.post("/api/posts")
 async def create_post(
     title: str = Form(...),
@@ -242,20 +244,25 @@ async def create_post(
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(database.get_db)
 ):
+    # 여기서 전달하는 키(왼쪽)가 models.py의 변수명과 일치해야 합니다!
     new_post = models.Post(
         author_id=current_user.id,
         title=title,
         content=content,
-        image_url=image_url,
         feel=feel,
-        eat=eat, 
-        people_meet=people_meet, 
-        lat=lat,
-        lng=lng, 
-        address=address
+        eat=eat,
+        people_meet=people_meet,
+        image_url=image_url,
+        
+        # 수정된 부분: 모델의 필드명(area_xxx)에 맞춰서 값을 매핑
+        area_adr=address,           # address -> area_adr
+        area_lat=lat,               # lat -> area_lat
+        area_lng=lng,               # lng -> area_lng
+        area_name=place_name        # place_name -> area_name
     )
-    # *참고: models.py에 해당 필드들이 정의되어 있어야 합니다.
     
     db.add(new_post)
     db.commit()
-    return {"status": "OK"}
+    db.refresh(new_post) # 생성된 후 ID 등을 업데이트 받기 위해 추가하는 것이 좋습니다.
+    
+    return {"status": "OK", "id": new_post.id}
