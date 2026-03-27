@@ -198,7 +198,7 @@ async function Register() {
 async function emailLogin() {
     const formData = {
         email: $('#emaill').val(), // HTML의 id에 맞춰 수정 (emaill -> email 등 확인 필요)
-        password: $('#passwordd').val()
+        password: $('#password').val()
     };
 
     try {

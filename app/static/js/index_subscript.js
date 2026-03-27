@@ -2,145 +2,147 @@
  * [Index 메인 로직]
  */
 $(document).ready(async function () {
-    // 1. 초기 UI 세팅 및 명언 가져오기
+    // 1. 초기 UI 세팅 (명언 등)
     loadGoodSay();
 
     // 2. 로그인 체크 (localStorage 사용)
     const token = localStorage.getItem("userToken");
 
     if (token) {
-        // 로그인 상태 UI 처리
-        $(".top_icon").append(`<a href="/Mypage"><img src="../static/assets/mypage.png" alt="마이페이지"></a>`);
+        // 로그인 상태일 때: 마이페이지 아이콘 추가 및 데이터 로드
+        $(".top_icon").append(`
+            <a href="/Mypage">
+                <img src="../static/assets/mypage.png" alt="마이페이지">
+            </a>
+            <a href="javascript:void(0)" onclick="logout()" style="margin-left:10px; font-size:14px;">로그아웃</a>
+        `);
         
-        // 유저 정보 확인 및 데이터 로드
-        await initializeUserData(token);
+        // 데이터 로드 시작
+        await initializeDashboard(token);
     } else {
-        // 비로그인 상태 UI 처리
+        // 비로그인 상태일 때
         $(".top_icon").append(`<a href="/login"><p>로그인</p></a>`);
     }
 });
 
 /**
- * [데이터 초기화] 한 번의 호출로 모든 통계를 처리합니다.
+ * [대시보드 초기화] 유저 정보와 포스트 데이터를 한 번에 처리
  */
-async function initializeUserData(token) {
+async function initializeDashboard(token) {
     try {
-        // 1. 유저 유효성 체크
-        const userRes = await fetch('/User', {
-            method: 'POST',
+        // 1. 내 정보 가져오기
+        const userResponse = await fetch('/api/user/me', {
+            method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const user = await userRes.json();
 
-        if (!user.email) throw new Error("Invalid User");
+        if (!userResponse.ok) throw new Error("인증 만료");
+        const userData = await userResponse.json();
 
-        // 2. 게시글 데이터 전체 가져오기 (딱 한 번만 호출!)
-        const postsRes = await fetch('/WriteA', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Bearer ${token}` 
-            },
-            body: new URLSearchParams({ 'Author': user.id })
+        // 2. 내 게시글 데이터 가져오기
+        const postsResponse = await fetch('/api/posts/mine', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
-        const posts = await postsRes.json();
+        const posts = await postsResponse.json();
 
         if (posts && posts.length > 0) {
-            // 통계 계산 및 UI 업데이트
-            updateStatistics(posts);
-            // 랜덤 마커 표시
+            // 통계 계산 (장소, 음식, 사람)
+            processStatistics(posts);
+            // 랜덤 기록 하나를 지도에 표시
             showRandomMarker(posts);
+        } else {
+            $('#food_no_choose').text("아직 기록이 없어요. 첫 일기를 써보세요!");
         }
+
     } catch (err) {
-        console.error("Data Load Error:", err);
-        localStorage.removeItem("userToken");
-        // location.href = "/login"; // 필요시 주석 해제
+        console.error("데이터 로드 실패:", err);
+        // 토큰이 유효하지 않으면 로그아웃 처리
+        logout();
     }
 }
 
 /**
- * [통계 엔진] 장소, 음식, 사람 데이터를 한 번에 분석합니다.
+ * [통계 엔진] 데이터를 순회하며 분석
  */
-function updateStatistics(posts) {
-    const stats = { place: {}, eat: {}, person: {} };
+function processStatistics(posts) {
+    const stats = { 
+        place: {}, 
+        eat: {}, 
+        person: {} 
+    };
 
     posts.forEach(post => {
-        // 장소 통계
-        const adr = post.AREA_ADR;
-        if (adr) stats.place[adr] = (stats.place[adr] || 0) + 1;
-
-        // 음식 통계
-        const eat = post.Eat;
-        if (eat) stats.eat[eat] = (stats.eat[eat] || 0) + 1;
-
-        // 사람 통계 (콤마 분리 처리)
-        const people = post.People_meet;
-        if (people && people !== "None") {
-            people.split(",").forEach(p => {
+        if (post.AREA_ADR) stats.place[post.AREA_ADR] = (stats.place[post.AREA_ADR] || 0) + 1;
+        if (post.Eat) stats.eat[post.Eat] = (stats.eat[post.Eat] || 0) + 1;
+        
+        if (post.People_meet && post.People_meet !== "None") {
+            post.People_meet.split(",").forEach(p => {
                 const name = p.trim();
                 stats.person[name] = (stats.person[name] || 0) + 1;
             });
         }
     });
 
-    // 가장 적게/많이 나타난 데이터 계산 후 UI 반영
-    displayEatRecommendation(getMinKey(stats.eat));
+    // 결과 반영
+    if (Object.keys(stats.eat).length > 0) {
+        const leastEaten = getMinKey(stats.eat);
+        displayFoodSuggestion(leastEaten);
+    }
+    
     if (Object.keys(stats.person).length > 0) {
-        $("#peoname").text(getMaxKey(stats.person));
+        const mostMet = getMaxKey(stats.person);
+        $("#peoname").text(mostMet);
     }
 }
 
 /**
- * [음식 추천 UI]
+ * [음식 추천 시스템]
  */
-function displayEatRecommendation(minEat) {
-    if (!minEat) return;
-    $('#food_no_choose').text(`${minEat}을 안 먹은지 오래되셨더라고요 ( ˘･_･˘ )`);
-    
-    const menuImages = {
+function displayFoodSuggestion(category) {
+    const menuData = {
         "한식": ["bibimbap.png", "ramyeon.png", "salad.png", "tteokbokki.png"],
         "일식": ["eelrice.png", "sushi.png", "takoyaki.png"],
         "중식": ["dandan.png", "Dimsum.png", "mutton.png"],
         "양식": ["Hamburger.png", "steak.png"]
     };
 
-    const category = minEat.includes("한식") ? "korean" : 
-                     minEat.includes("일식") ? "japan" : 
-                     minEat.includes("중식") ? "china" : "american";
-    
-    const images = menuImages[minEat] || menuImages["한식"];
+    const folderMap = { "한식": "korean", "일식": "japan", "중식": "china", "양식": "american" };
+    const folder = folderMap[category] || "korean";
+    const images = menuData[category] || menuData["한식"];
     const randomImg = images[Math.floor(Math.random() * images.length)];
-    
-    $("#food_image").html(`<img src="../static/assets/menu/${category}/${randomImg}" alt="${minEat}">`);
+
+    $('#food_no_choose').text(`${category}을 안 먹은지 오래되셨더라고요 ( ˘･_･˘ )`);
+    $("#food_image").html(`<img src="../static/assets/menu/${folder}/${randomImg}" alt="${category}" style="width:100px;">`);
 }
 
 /**
- * [공통 유틸리티]
+ * [기타 유틸리티]
  */
-function getMaxKey(obj) {
-    return Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b);
-}
+function getMaxKey(obj) { return Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b); }
+function getMinKey(obj) { return Object.keys(obj).reduce((a, b) => obj[a] < obj[b] ? a : b); }
 
-function getMinKey(obj) {
-    return Object.keys(obj).reduce((a, b) => obj[a] < obj[b] ? a : b);
+function logout() {
+    localStorage.clear();
+    location.href = "/login";
 }
 
 async function loadGoodSay() {
-    const res = await fetch("/Good_Say");
-    const data = await res.json();
-    $("#good_say").text(data.message);
-    $("#good_say_author").text(`- ${data.author} -`);
+    try {
+        const res = await fetch("/api/quotes/random");
+        const data = await res.json();
+        $("#good_say").text(data.message);
+        $("#good_say_author").text(`- ${data.author} -`);
+    } catch(e) {
+        $("#good_say").text("오늘도 멋진 하루 보내세요.");
+    }
 }
 
 function showRandomMarker(posts) {
-    const element = posts[Math.floor(Math.random() * posts.length)];
-    const adr = element.AREA_LOAD_ADR !== "null" ? element.AREA_LOAD_ADR : element.AREA_ADR;
-    const name = element.AREA_CUSTOM_NAME !== "null" ? element.AREA_CUSTOM_NAME : 
-                 (element.AREA_NAME !== "null" ? element.AREA_NAME : "");
-    const date = element.Created_At.split("T")[0];
-
-    // 기존 customMarker 함수 호출
+    const post = posts[Math.floor(Math.random() * posts.length)];
     if (typeof customMarker === "function") {
-        customMarker(element.Feel, element.AREA_LAT, element.AREA_LNG, adr, name, date, element.Created_At);
+        const adr = post.AREA_LOAD_ADR !== "null" ? post.AREA_LOAD_ADR : post.AREA_ADR;
+        const name = post.AREA_CUSTOM_NAME !== "null" ? post.AREA_CUSTOM_NAME : (post.AREA_NAME || "");
+        customMarker(post.Feel, post.AREA_LAT, post.AREA_LNG, adr, name, post.Created_At.split("T")[0], post.Created_At);
     }
 }

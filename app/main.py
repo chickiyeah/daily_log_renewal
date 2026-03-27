@@ -101,3 +101,27 @@ async def login_user(
         "token_type": "bearer",
         "nickname": user.nickname # 프론트에서 표시용으로 추가
     }
+
+# 내 정보 가져오기
+@app.get("/api/user/me")
+async def read_user_me(current_user: models.User = Depends(auth.get_current_user)):
+    """로그인한 사람만 볼 수 있는 내 정보 API"""
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "nickname": current_user.nickname,
+        "name": current_user.name
+    }
+
+# 내 모든 글 가져오기
+@app.get("/api/posts/mine")
+async def get_my_posts(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
+    return db.query(models.Post).filter(models.Post.author_id == current_user.id).all()
+
+# 랜덤 명언 (기존 Good_Say 대체)
+@app.get("/api/quotes/random")
+async def get_quote():
+    # 이 부분은 DB에서 가져오거나 리스트에서 랜덤 반환
+    return {"message": "행복은 습관이다.", "author": "허버드"}
+
+# ---------------------------------------------------------

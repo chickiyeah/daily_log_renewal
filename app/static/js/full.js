@@ -12,6 +12,9 @@ $("#fullpage").fullpage({
   dragAndMove: true,
   dragAndMoveKey: "YWx2YXJvdHJpZ28uY29tX0EyMlpISmhaMEZ1WkUxdmRtVT0wWUc=",
   controlArrows: false,
+  
+  // 추가된 옵션: 이 영역 안에서는 풀페이지 스크롤이 무시됩니다.
+  normalScrollElements: '#map_module' 
 });
 
 

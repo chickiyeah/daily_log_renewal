@@ -1,315 +1,130 @@
+// 변수 선언만 먼저 함 (값 할당 X)
+let map;
+let geocoder;
+let ps;
+let marker; 
+let markers = [];
+let overlays = [];
+// index_map.js 또는 스크립트 하단에 추가
 
-function sear() {
-    keyword = document.getElementById("searp").value
-    if (keyword != '') {
-        ps.keywordSearch(keyword, placesSearchCB);
-    } else {
-        alert("검색어를 입력해주세요.")
-    }
-}
-let mapContainer = document.getElementById('map_module'), // 지도를 표시할 div 
-    mapOption = {
-        center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
-        level: 1 // 지도의 확대 레벨
+$(document).ready(function() {
+    const $mapArea = $('#map_module');
+
+    // 1. 마우스가 지도 위로 올라왔을 때 (데스크탑)
+    $mapArea.on('mouseenter', function () {
+        $.fn.fullpage.setAllowScrolling(false);      // 스크롤 금지
+        $.fn.fullpage.setKeyboardScrolling(false);   // 키보드 방향키 금지
+    });
+
+    // 2. 마우스가 지도를 벗어났을 때 (데스크탑)
+    $mapArea.on('mouseleave', function () {
+        $.fn.fullpage.setAllowScrolling(true);       // 스크롤 허용
+        $.fn.fullpage.setKeyboardScrolling(true);    // 키보드 방향키 허용
+    });
+
+    /// --- 모바일 (터치) 대응 핵심 ---
+    $mapArea.addEventListener('touchstart', function (e) {
+        // 1. 풀페이지 스크롤 일시 정지
+        $.fn.fullpage.setAllowScrolling(false);
+        
+        // 2. 만약 유료 플러그인 dragAndMove가 활성화되어 있다면 이것도 꺼야 함
+        if ($.fn.fullpage.setDragAndMove) {
+            $.fn.fullpage.setDragAndMove(false);
+        }
+        
+        // 이벤트가 상위(Fullpage)로 전파되는 것을 막음
+        e.stopPropagation();
+    }, { passive: false });
+
+    $mapArea.addEventListener('touchend', function () {
+        // 손을 떼면 다시 풀페이지 스크롤 활성화
+        $.fn.fullpage.setAllowScrolling(true);
+        
+        if ($.fn.fullpage.setDragAndMove) {
+            $.fn.fullpage.setDragAndMove(true);
+        }
+    }, { passive: false });
+});
+// 지도 초기화 함수
+function initMap() {
+    const mapContainer = document.getElementById('map_module'); 
+    
+    // 1. LatLng 등 모든 객체 생성은 반드시 이 함수(initMap) 안에서 진행
+    const mapOption = {
+        center: new kakao.maps.LatLng(37.566826, 126.9786567), 
+        level: 3 
     };
 
-// 지도를 생성합니다    
-let map = new kakao.maps.Map(mapContainer, mapOption);
+    map = new kakao.maps.Map(mapContainer, mapOption); // 지도 생성
+    geocoder = new kakao.maps.services.Geocoder();    // 주소-좌표 변환 객체
+    ps = new kakao.maps.services.Places();           // 장소 검색 객체
+    marker = new kakao.maps.Marker();                 // 클릭 위치 표시용 마커
 
-var markers = [];
-var overlays = [];
+    // 지도 컨트롤 추가
+    map.addControl(new kakao.maps.MapTypeControl(), kakao.maps.ControlPosition.TOPRIGHT);
+    map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
-// 주소-좌표 변환 객체를 생성합니다
-let geocoder = new kakao.maps.services.Geocoder();
+    // 지도 클릭 이벤트 등록
+    kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+        handleMapClick(mouseEvent.latLng);
+    });
 
-let marker = new kakao.maps.Marker(), // 클릭한 위치를 표시할 마커입니다
-    infowindow = new kakao.maps.InfoWindow({ zindex: 3 }); // 클릭한 위치에 대한 주소를 표시할 인포윈도우입니다
+    console.log("카카오맵이 성공적으로 로드되었습니다.");
+}
 
-// 현재 지도 중심좌표로 주소를 검색해서 지도 좌측 상단에 표시합니다
-//searchAddrFromCoords(map.getCenter(), displayCenterInfo);
-
-// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
-var mapTypeControl = new kakao.maps.MapTypeControl();
-
-// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
-// kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
-map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-
-// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
-var zoomControl = new kakao.maps.ZoomControl();
-map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-// 지도를 클릭했을 때 클릭 위치 좌표에 대한 주소정보를 표시하도록 이벤트를 등록합니다
-kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
-    hideMarkers()
-    hideOverlay()
-    searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
+// 지도 클릭 시 주소 정보 가져오기
+function handleMapClick(latLng) {
+    hideOverlay();
+    geocoder.coord2Address(latLng.getLng(), latLng.getLat(), function (result, status) {
         if (status === kakao.maps.services.Status.OK) {
-            let coords = mouseEvent.latLng.toString().replace("(", "").replace(")", "").split(",")
-            let detailAddr = !!result[0].road_address ? '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>' : '';
-            detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
-            detailAddr += '<div>위도 (LAT) : ' + coords[0] + '</div>';
-            detailAddr += '<div>경도 (LNG) : ' + coords[1] + '</div>';
+            const roadAddr = result[0].road_address ? result[0].road_address.address_name : '도로명 주소 없음';
+            const detailAddr = result[0].address.address_name;
+            
+            const content = `<div class="bAddr" style="padding:5px;font-size:12px;">
+                                <span class="title">선택된 주소</span>
+                                <div>${roadAddr}</div>
+                            </div>`;
 
-            let content = '<div class="bAddr">' +
-                '<span class="title">주소정보</span>' +
-                detailAddr +
-                '</div>';
+            $("#selected").html(`<span><span class="title">선택된 주소</span> : ${roadAddr}</span>`);
 
-            $("#selected").empty()
-            $("#selected").append(
-                `<span>
-                        <span class="title">선택된 주소</span>
-                        ${detailAddr}
-                    </span>`
-            )
-
-            // 마커를 클릭한 위치에 표시합니다 
-            marker.setPosition(mouseEvent.latLng);
+            marker.setPosition(latLng);
             marker.setMap(map);
-            var overlay = new kakao.maps.CustomOverlay({
+            
+            const overlay = new kakao.maps.CustomOverlay({
                 content: content,
-                map: map,
-                position: marker.getPosition()
-            })
-
-            overlays.push(overlay)
-
-            // 인포윈도우에 클릭한 위치에 대한 법정동 상세 주소정보를 표시합니다
-            //infowindow.setContent(content);
-            //infowindow.open(map, marker);
+                position: latLng,
+                map: map
+            });
+            overlays.push(overlay);
         }
     });
-});
-
-// 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
-/*kakao.maps.event.addListener(map, 'idle', function () {
-    searchAddrFromCoords(map.getCenter(), displayCenterInfo);
-});*/
-
-// 장소 검색 객체를 생성합니다
-var ps = new kakao.maps.services.Places();
-
-function placesSearchCB(data, status, pagination) {
-    if (status === kakao.maps.services.Status.OK) {
-
-        // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-        // LatLngBounds 객체에 좌표를 추가합니다
-        var bounds = new kakao.maps.LatLngBounds();
-        hideMarkers()
-        hideOverlay()
-        for (var i = 0; i < data.length; i++) {
-            displayMarker(data[i]);
-            bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-        }
-
-        // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-        map.setBounds(bounds);
-    } else {
-        alert("검색 결과가 없습니다.")
-    }
 }
 
-// 배열에 추가된 마커들을 지도에 표시하거나 삭제하는 함수입니다
-function setMarkers(map) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
-    }
-}
-
-// "마커 보이기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에 표시하는 함수입니다
-function showMarkers() {
-    setMarkers(map)
-}
-
-// "마커 감추기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에서 삭제하는 함수입니다
-function hideMarkers() {
-    setMarkers(null);
-}
-
-function setOverlay(map) {
-    for (var i = 0; i < overlays.length; i++) {
-        overlays[i].setMap(map);
-    }
-}
-
+// 오버레이 및 마커 초기화 함수들
 function hideOverlay() {
-    setOverlay(null)
+    overlays.forEach(o => o.setMap(null));
+    overlays = [];
 }
 
-function panTo(lat, lng) {
-    // 이동할 위도 경도 위치를 생성합니다 
-    lat = parseFloat(lat) + 0.0005
-    console.log(lat)
-    var moveLatLon = new kakao.maps.LatLng(lat, lng);
-
-    // 지도 중심을 부드럽게 이동시킵니다
-    // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
-    map.panTo(moveLatLon);
+function clearMap() {
+    markers.forEach(m => m.setMap(null));
+    markers = [];
+    hideOverlay();
+    if(marker) marker.setMap(null);
 }
 
-function customMarker(Feel, LAT, LNG, ADR, Name, Created_At, Created_At1) {
-    let link = ""
-    if (Feel == "맑음") {
-        link = "../static/assets/map/sun.png"
-    }
-
-    if (Feel == "흐림") {
-        link = "../static/assets/map/cloud.png"
-    }
-
-    if (Feel == "비") {
-        link = "../static/assets/map/rain.png"
-    }
-
-    if (Feel == "눈") {
-        link = "../static/assets/map/snow.png"
-    }
-
-    if (Feel == "바람") {
-        link = "../static/assets/map/wind.png"
-    }
-
-    var imageSrc = link, // 마커이미지의 주소입니다    
-        imageSize = new kakao.maps.Size(44, 46), // 마커이미지의 크기입니다
-        imageOption = { offset: new kakao.maps.Point(27, 69) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-
-    // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
-    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
-        markerPosition = new kakao.maps.LatLng(37.54699, 127.09598); // 마커가 표시될 위치입니다
-
-    var bounds = new kakao.maps.LatLngBounds();
-    // 마커를 생성합니다
-    //console.log(LAT += 0.03)
-    bounds.extend(new kakao.maps.LatLng(LAT, LNG));
-    map.setBounds(bounds)
-
-    var marker = new kakao.maps.Marker({
-        position: new kakao.maps.LatLng(LAT, LNG),
-        image: markerImage, // 마커이미지 설정 
-        map: map
-    });
-
-    let detailAddr = `<div><a style="color: blue;" href="/write/detail?postid=${Created_At1}">상세 글 보러가기</a></div>`;
-    detailAddr += '<div>이름 : ' + Name + '</div>';
-    detailAddr += '<div>기분 : ' + Feel + '</div>';
-    detailAddr += '<div>주소 : ' + ADR + '</div>';
-
-    let content = '<div class="bAddr">' +
-        '<span class="title">주소정보</span>' +
-        detailAddr +
-        '</div>';
-
-    bounds.extend(marker.getPosition());
-    map.setBounds(bounds)
-
-
-    var overlay = new kakao.maps.CustomOverlay({
-        content: content,
-        map: map,
-        position: marker.getPosition()
-    })
-    overlays.push(overlay)
-
-
-    panTo(LAT, LNG)
-
-
-    markers.push(marker)
-
-    kakao.maps.event.addListener(marker, 'click', function (mouseEvent) {
-        hideOverlay()
-        let detailAddr = `<div><a style="color: blue;" href="/write/detail?postid=${Created_At1}">상세 글 보러가기</a></div>`;
-        detailAddr += '<div>이름 : ' + Name + '</div>';
-        detailAddr += '<div>기분 : ' + Feel + '</div>';
-        detailAddr += '<div>주소 : ' + ADR + '</div>';
-
-        let content = '<div class="bAddr">' +
-            '<span class="title">주소정보</span>' +
-            detailAddr +
-            '</div>';
-        var overlay = new kakao.maps.CustomOverlay({
-            content: content,
-            map: map,
-            position: marker.getPosition()
-        })
-        overlays.push(overlay)
-        // 인포윈도우에 클릭한 위치에 대한 법정동 상세 주소정보를 표시합니다`  
-        //infowindow.setContent(content);
-        //infowindow.open(map, marker);
-    });
-}
-
-// 지도에 마커를 표시하는 함수입니다
-function displayMarker(place) {
-
-
-    // 마커를 생성하고 지도에 표시합니다
-    var marker = new kakao.maps.Marker({
-        map: map,
-        position: new kakao.maps.LatLng(place.y, place.x)
-    });
-
-    markers.push(marker)
-
-    // 마커에 클릭이벤트를 등록합니다
-    kakao.maps.event.addListener(marker, 'click', function (mouseEvent) {
-        console.log(markers)
-
-        searchDetailAddrFromCoords(new kakao.maps.LatLng(place.y, place.x), function (result, status) {
-            if (status === kakao.maps.services.Status.OK) {
-                let detailAddr = !!result[0].road_address ? '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>' : '';
-                detailAddr += '<div>장소 이름 : ' + place.place_name + '</div>'
-                detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
-                detailAddr += '<div>위도 (LAT) : ' + place.y + '</div>';
-                detailAddr += '<div>경도 (LNG) : ' + place.x + '</div>';
-
-                let content = '<div class="bAddr">' +
-                    '<span class="title">주소정보</span>' +
-                    detailAddr +
-                    '</div>';
-
-                $("#selected").empty()
-                $("#selected").append(
-                    `<span>
-                        <span class="title">선택된 주소</span>
-                        ${detailAddr}
-                    </span>`
-                )
-
-                var overlay = new kakao.maps.CustomOverlay({
-                    content: content,
-                    map: map,
-                    position: marker.getPosition()
-                })
-                overlays.push(overlay)
-
-                // 인포윈도우에 클릭한 위치에 대한 법정동 상세 주소정보를 표시합니다
-                //infowindow.setContent(content);
-                //infowindow.open(map, marker);
-            }
-        });
-    });
-}
-
-function searchAddrFromCoords(coords, callback) {
-    geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
-}
-
-function searchDetailAddrFromCoords(coords, callback) {
-    geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
-}
-
-        // 지도 좌측상단에 지도 중심좌표에 대한 주소정보를 표출하는 함수입니다
-/*function displayCenterInfo(result, status) {
-    if (status === kakao.maps.services.Status.OK) {
-        let infoDiv = document.getElementById('centerAddr');
-
-        for (let i = 0; i < result.length; i++) {
-            // 행정동의 region_type 값은 'H' 이므로
-            if (result[i].region_type === 'H') {
-                infoDiv.innerHTML = result[i].address_name;
-                break;
-            }
+// 핵심 실행 로직
+if (typeof kakao !== 'undefined') {
+    // v2/maps/sdk.js?autoload=false 일 때 반드시 필요한 과정
+    kakao.maps.load(function() {
+        initMap();
+        
+        // 로그인 체크 및 데이터 로드 (필요시)
+        const token = localStorage.getItem("userToken");
+        if (token) {
+            // initializeDashboard(token); // 이전에 정의한 함수가 있다면 호출
         }
-    }
-}*/
+    });
+} else {
+    console.error("카카오맵 SDK 로드 실패. API Key와 도메인 설정을 확인하세요.");
+}

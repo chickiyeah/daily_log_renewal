@@ -1,38 +1,76 @@
 import os
-import bcrypt  # passlib 대신 순수 bcrypt 사용
 from datetime import datetime, timedelta
-from jose import jwt
+from typing import Optional
+
+import bcrypt
+from jose import JWTError, jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 from dotenv import load_dotenv
+
+# 내부 모듈 임포트 (경로 주의)
+from . import database, models
 
 load_dotenv()
 
+# 설정값 로드
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
 
-# 1. 비밀번호 해시화 (가입 시)
-def get_password_hash(password: str):
-    # bcrypt는 바이트 문자열을 처리하므로 인코딩 필요
+# 토큰 추출을 위한 OAuth2 설정
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
+
+# --- 비밀번호 관련 함수 ---
+
+def get_password_hash(password: str) -> str:
+    """비밀번호를 해시화하여 반환 (bcrypt)"""
     pwd_bytes = password.encode('utf-8')
-    # 솔트 생성 및 해싱
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(pwd_bytes, salt)
-    # DB 저장을 위해 문자열로 디코딩해서 반환
     return hashed.decode('utf-8')
 
-# 2. 비밀번호 일치 확인 (로그인 시)
-def verify_password(plain_password: str, hashed_password: str):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """입력한 비밀번호와 DB의 해시를 비교"""
     try:
-        pwd_bytes = plain_password.encode('utf-8')
-        hashed_bytes = hashed_password.encode('utf-8')
-        # bcrypt.checkpw가 직접 비교를 수행함
-        return bcrypt.checkpw(pwd_bytes, hashed_bytes)
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
     except Exception:
         return False
 
-# 3. JWT 토큰 생성
+# --- JWT 관련 함수 ---
+
 def create_access_token(data: dict):
+    """JWT 토큰 생성"""
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# --- 유저 인증 Dependency (이 부분이 없으셨던 부분!) ---
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
+    """
+    헤더의 Bearer 토큰을 읽어 현재 로그인한 유저 객체를 반환합니다.
+    사용법: def read_items(user: User = Depends(get_current_user))
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="인증 정보가 유효하지 않거나 만료되었습니다.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        # 토큰 디코딩
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+        
+    # DB에서 유저 조회
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if user is None:
+        raise credentials_exception
+        
+    return user

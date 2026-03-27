@@ -51,7 +51,7 @@
     <link rel="icon" href="./static/assets/house.svg" type="image/x-icon">
 
     <!-- 스크립트 -->
-    <script src="../static/js/auth.js" defer></script>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
@@ -75,9 +75,9 @@
             <p>이메일</p>
             <input class="email_input" id="emaill" type="email" onkeypress="javascript:if(event.keyCode==13) Login()"
                 class="form-control">
-            <p id="password">비밀번호</p>
-            <input class="email_input" id="passwordd" type="password"
-                onkeypress="javascript:if(event.keyCode==13) Login()" autocomplete="current-password"
+            <p>비밀번호</p>
+            <input class="email_input" id="password" type="password"
+                onkeypress="javascript:if(event.keyCode==13) emailLogin()" autocomplete="current-password"
                 class="form-control">
             <span class="form-check">
                 <input class="form-check-input-login" onclick="is_checked()" type="checkbox" id="flexCheckDefault">
@@ -155,5 +155,5 @@
     </script>
     <!-- End Channel Plugin -->
 </body>
-
+<script src="./static/js/auth.js?v=1.1" defer></script>
 </html>
