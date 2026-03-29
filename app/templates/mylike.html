@@ -33,131 +33,31 @@
 
     <!-- 스크립트 -->
     <script src="../static/js/index.js" defer></script>
-
-        <!-- <script src="https://code.jquery.com/jquery-3.6.1.min.js"
-        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script> -->
-        
+<script src="../static/js/auth.js" defer></script>
+    <script src="../static/js/mylike.js?v=1.1" defer></script>
 </head>
-<script>
-    let id = ""
-    $(document).ready(function () {
-        if (location.href.includes("?")) {
-            document.cookie = "id = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-            location.href = "/"
-        }
-        if (document.cookie.split("user_id=")[1].includes(";")) {
-            id = document.cookie.split("user_id=")[1].split(";")[0].replace(" ", "")
-            showimage(id)
-        } else {
-            id = document.cookie.split("user_id=")[1].replace(" ", "")
-            showimage(id)
-        }
-
-    })
-
-    function rand(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function ima(link) {
-        return `<img src="${link}" alt="사용자가 좋아요 이미지">`
-    }
-    function showimage(id) {
-        $.ajax({
-            url: "/WriteA",
-            method: "POST",
-            data: {
-                "Author": id
-            },
-            success: function (response) {
-                const result = {};
-                let num = []
-                let length = response.length
-                let inum = 0
-                if (length > 5) {
-                    while (num.length < 5) {
-                        num1 = rand(0, response.length - 1)
-                        console.log(inum)
-                        if (!num.includes(num1)) {
-
-                            if (response[num1].AttachFiles != "null" && response[num1].AttachFiles != "") {
-                                inum = 0
-                                num.push(num1)
-                            } else {
-                                if (inum > 6) {
-                                    break;
-                                } else {
-                                    inum += 1
-                                }
-                            }
-
-                        }
-                    }
-
-                    for (var i = 0; i < num.length; i++) {
-                        console.log(num[i])
-                        let imae = ima(response[num[i]].AttachFiles)
-                        $("#image").append(imae)
-                    }
-                } else {
-                    let max = response.length
-                    for (var i = 0; i < max; i++) {
-                        let imae = ima(response[i].AttachFiles)
-                        $("#image").append(imae)
-                    }
-                }
-            }
-        })
-    }
-
-    function logout() {
-        document.cookie = "user_id = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-        location.href = "/"
-        alert("로그아웃 되었습니다.")
-    }
-</script>
 
 <body>
-    <!-- 헤더 시작 -->
     <header class="header">
         <div class="top_align">
-            <!-- 네비 시작 -->
-
             <nav>
                 <ul class="navbar_menu">
                     <li><a href="/map">지도보기</a></li>
-                    <li><a href="/write/1?post_page=0">기록하기</a></li>
+                    <li><a href="/write/1">기록하기</a></li>
                     <li><a href="/rank">랭킹보기</a></li>
                     <li><a href="/Mypage">마이페이지</a></li>
                 </ul>
             </nav>
-            <!-- 네비 끝 -->
-            <!-- 로고 시작 -->
             <div class="top_logo">
-                <a href="/">
-                    <i class="fa-solid fa-house-user"></i>
-                </a>
-                <a href="/">
-                    <h1>DAILY LOG</h1>
-                </a>
+                <a href="/"><i class="fa-solid fa-house-user"></i><h1>DAILY LOG</h1></a>
             </div>
-            <!-- 로고 끝 -->
-            <!-- 모바일용 햄버거 -->
-            <div class="nav_toogleBT">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-            <!-- 아이콘 시작 -->
             <div class="top_icon">
-                <a onclick="location.href='/Mypage/Like'"><img src="../static/assets/like2.png" alt="메뉴의 좋아요 아이콘"></a>
-                <a href="/Mypage"><img src="../static/assets/mypage2.png" alt="메뉴의 마이페이지 아이콘"></a>
+                <a onclick="location.href='/Mypage/Like'"><img src="../static/assets/like2.png" alt="좋아요"></a>
+                <a href="/Mypage"><img src="../static/assets/mypage2.png" alt="마이페이지"></a>
             </div>
-            <!-- 아이콘 끝 -->
         </div>
     </header>
-    </div>
-    <!-- 헤더 끝 -->
 
-    <!-- 메인 시작 -->
     <main id="main">
         <section class="mypage_wrap">
             <div class="mypage_section">
@@ -170,77 +70,19 @@
                         <li onclick="location.href='/Mypage/Delete'">탈퇴</li>
                     </ul>
                 </div>
+                
                 <div class="mylike_right">
                     <div class="mylike_card">
-                        <div id="image">
-
+                        <div id="image" class="image_grid">
+                            <p style="text-align:center; width:100%;">불러오는 중...</p>
                         </div>
-                    </div>
-                    <div>
-                        <!-- 페이징처리 -->
-
                     </div>
                 </div>
             </div>
         </section>
     </main>
-    <!-- 메인 끝 -->
-    <!-- 푸터 시작 -->
+    
     <footer class="footer">
-        <div class="bottom_wrap">
-            <div class="bottom_simbol">
-                <i class="fa-solid fa-house-user"></i>
-            </div>
-            <div class="bottom_info">
-                <span>Copyright 2022 . DAILYLOG . All Rights Reserved .</span>
-                <span>전체서비스 이용약관 개인정보처리방침 통합검색 고객센터 © DAILY LOG</span>
-            </div>
-        </div>
-    </footer>
-    <!-- 푸터 끝 -->
-
-    <!-- Channel Plugin Scripts -->
-    <script>
-        (function () {
-            var w = window;
-            if (w.ChannelIO) {
-                return (window.console.error || window.console.log || function () { })('ChannelIO script included twice.');
-            }
-            var ch = function () {
-                ch.c(arguments);
-            };
-            ch.q = [];
-            ch.c = function (args) {
-                ch.q.push(args);
-            };
-            w.ChannelIO = ch;
-            function l() {
-                if (w.ChannelIOInitialized) {
-                    return;
-                }
-                w.ChannelIOInitialized = true;
-                var s = document.createElement('script');
-                s.type = 'text/javascript';
-                s.async = true;
-                s.src = 'https://cdn.channel.io/plugin/ch-plugin-web.js';
-                s.charset = 'UTF-8';
-                var x = document.getElementsByTagName('script')[0];
-                x.parentNode.insertBefore(s, x);
-            }
-            if (document.readyState === 'complete') {
-                l();
-            } else if (window.attachEvent) {
-                window.attachEvent('onload', l);
-            } else {
-                window.addEventListener('DOMContentLoaded', l, false);
-                window.addEventListener('load', l, false);
-            }
-        })();
-        ChannelIO('boot', {
-            "pluginKey": "950a4eb1-7a2f-4a84-a308-242e60634b09" //please fill with your plugin key
-        });
-    </script>
-    <!-- End Channel Plugin -->    
+        </footer>
 </body>
-
 </html>

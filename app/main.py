@@ -80,6 +80,11 @@ async def read_ranking_page(request: Request):
     # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
     return templates.TemplateResponse("mywrite.html", {"request": request})
 
+@app.get("/Mypage/Like", response_class=HTMLResponse)
+async def read_ranking_page(request: Request):
+    # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
+    return templates.TemplateResponse("mylike.html", {"request": request})
+
 # ---------------------------------------------------------
 # [API] 데이터 처리 컨트롤러 (실제 로직)
 # ---------------------------------------------------------
@@ -336,6 +341,24 @@ async def get_post_detail(
         raise HTTPException(status_code=404, detail="글을 찾을 수 없습니다.")
         
     return post
+
+#이미지 목록 조회
+# app/main.py
+
+@app.get("/api/user/images")
+async def get_my_images(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    # image_url이 null이 아니고 빈 문자열이 아닌 게시글만 가져옴
+    posts_with_images = db.query(models.Post).filter(
+        models.Post.author_id == current_user.id,
+        models.Post.image_url.isnot(None),
+        models.Post.image_url != ""
+    ).order_by(models.Post.created_at.desc()).all()
+    
+    # 이미지 경로 리스트만 추출하여 반환 (혹은 게시글 정보 포함 가능)
+    return posts_with_images
 
 #일기 삭제
 @app.delete("/api/posts/{post_id}")

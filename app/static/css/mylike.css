@@ -37,6 +37,22 @@
     margin: 1rem;
 }
 
+.image_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+.img_item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover; /* 이미지가 찌그러지지 않게 */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.img_item img:hover { transform: scale(1.05); }
+
 /* 반응형 */
 @media(max-width:767px) and (min-width:320px) {
 
