@@ -75,6 +75,11 @@ async def read_ranking_page(request: Request):
     # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
     return templates.TemplateResponse("ranking.html", {"request": request})
 
+@app.get("/Mypage/Write", response_class=HTMLResponse)
+async def read_ranking_page(request: Request):
+    # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
+    return templates.TemplateResponse("mywrite.html", {"request": request})
+
 # ---------------------------------------------------------
 # [API] 데이터 처리 컨트롤러 (실제 로직)
 # ---------------------------------------------------------

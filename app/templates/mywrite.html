@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../static/css/reset.css">
     <link rel="stylesheet" href="../static/css/header2.css">
     <link rel="stylesheet" href="../static/css/header3.css">
-    <link rel="stylesheet" href="../static/css/mywrite.css">
+    <link rel="stylesheet" href="../static/css/mywrite.css?v=1.2">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>DAILY LOG</title>
 
@@ -31,273 +31,39 @@
 
     <!-- 스크립트 -->
     <script src="../static/js/index.js" defer></script>
+    <script src="../static/js/mywrite.js?v=1.1" defer></script>
+    <script src="../static/js/auth.js" defer></script>
 
 </head>
-<script>
-    $(document).ready(function () {
-        if (document.cookie.includes("user_id=")) {
-            login = true
-            if (document.cookie.split("user_id=")[1].includes(";")) {
-                id = document.cookie.split("user_id=")[1].split(";")[0].replace(" ", "")
-            } else {
-                id = document.cookie.split("user_id=")[1].replace(" ", "")
-            }
-            let userinfo = ""
-            $.ajax({
-                url: "/User",
-                method: "POST",
-                data: {
-                    id: id
-                },
-                success: function (response) {
-                    name = response.nickname
-                    console.log(userinfo)
-                    //목록 가져오기
-                    $.ajax({
-                        url: "/WriteA",
-                        method: "POST",
-                        data: {
-                            "Author": id
-                        },
-                        success: function (response) {
-                            response.forEach(element => {
-                                let now = new Date()
-
-                                let year = now.getFullYear()
-                                let month = now.getMonth()
-                                let day = now.getDate()
-                                let hours = now.getHours() + 9
-                                let minutes = now.getMinutes()
-                                let seconds = now.getSeconds()
-
-                                let nowdate = new Date(year, month, day, hours, minutes, seconds)
-
-                                let chai = nowdate.getTime() - new Date(element.Created_At).getTime()
-                                let a = ""
-
-                                let wmon = element.Created_At.split("-")[1]
-                                let wday = element.Created_At.split("-")[2].split("T")[0]
-
-                                if (chai < 1000 * 60)
-                                    a += '방금'
-                                else if (chai < 1000 * 60 * 60)
-                                    a += Math.floor(chai / (1000 * 60)) + '분 전';
-                                else if (chai < 1000 * 60 * 60 * 24)
-                                    a += Math.floor(chai / (1000 * 60 * 60)) + '시간 전';
-                                else if (chai < 1000 * 60 * 60 * 24 * 30)
-                                    a += Math.floor(chai / (1000 * 60 * 60 * 24)) + '일 전';
-                                else if (chai < 1000 * 60 * 60 * 24 * 30 * 12)
-                                    a += Math.floor(chai / (1000 * 60 * 60 * 24 * 30)) + '달 전';
-                                else
-                                    a += Math.floor(chai / (1000 * 60 * 60 * 24 * 30 * 12)) + '년 전';
-
-                                addCard(wmon + "/" + wday, element.Name, name, a, element.Created_At)
-                            });
-                        }
-                    })
-                }
-            })
-
-        } else {
-            login = false
-            location.href = "/Login?loc = write/1"
-            alert("로그인이 필요합니다.")
-        }
-    })
-
-    function addCard(Date, Name, UserName, Ex, id) {
-        card = Card(Date, Name, UserName, Ex, id)
-        $("#write_main").prepend(card)
-    }
-    let del = false
-    function Delete() {
-        let chk = document.getElementsByClassName("optionCheck")
-        let list = []
-        if (del != true) {
-            del = true
-            if (confirm("정말 게시물을 삭제하겠습니까?\n이 작업은 취소할수 없습니다.") == true) {
-                for (var i = 0; i < chk.length; i++) {
-                    if (chk[i].checked == true) {
-                        //생성 시간, 작성자 아이디, 
-                        created_At = chk[i].id.split("_chk")[0]
-                        $.ajax({
-                            url: '/Write',
-                            method: "DELETE",
-                            data: {
-                                'id': id,
-                                'Created_At': created_At
-                            },
-                            success: function (response) {
-                                location.reload()
-                                alert("글을 삭제했습니다.")
-                            }
-                        })
-                    }
-                }
-            }
-            console.log(list)
-            del = false
-        } else {
-            alert("이미 게시글 삭제가 진행 중 입니다.\n기존 삭제가 완료될때까지 대기해주세요.\n이 문제가 5분 이상 지속될시 DB의 에러 일수있으니\n문의해주시기 바랍니다.")
-        }
-    }
-
-    function Card(Date, Name, UserName, Ex, id) {
-        if (Name.length > 48) {
-            Name = Name.substring(0, 47)
-        }
-        return `<a href="/write/detail?postid=${id}">
-            <div id=${id} class="write_box">
-                <input id=${id}_chk class="optionCheck" type="checkbox" id="check_btn">
-                    <label for="chkBox">
-                    <div>
-                        <h2>${Date}</h2>
-                        <h3>${Name}</h3>
-                    </div>
-                </label>
-                <div class="user_info">
-                    <p>${UserName}</p>
-                    <p>${Ex}</p>
-                </div>              
-            </div>
-        </a>`
-    }
-
-    function logout() {
-        document.cookie = "user_id = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-        location.href = "/"
-        alert("로그아웃 되었습니다.")
-    }
-
-</script>
-
 <body>
-    <!-- 헤더 시작 -->
-    <header class="header">
-        <div class="top_align">
-            <!-- 네비 시작 -->
-
-            <nav>
-                <ul class="navbar_menu">
-                    <li><a href="/map">지도보기</a></li>
-                    <li><a href="/write/1?post_page=0">기록하기</a></li>
-                    <li><a href="/rank">랭킹보기</a></li>
-                    <li><a href="/Mypage">마이페이지</a></li>
-                </ul>
-            </nav>
-            <!-- 네비 끝 -->
-           <!-- 로고 시작 -->
-            <div class="top_logo">
-                <a href="/">
-                    <i class="fa-solid fa-house-user"></i>
-                </a>
-                <a href="/">
-                    <h1>DAILY LOG</h1>
-                </a>
-            </div>
-            <!-- 로고 끝 -->
-            <!-- 모바일용 햄버거 -->
-            <div class="nav_toogleBT">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-            <!-- 아이콘 시작 -->
-            <div class="top_icon">
-                <a onclick="location.href='/Mypage/Like'"><img src="../static/assets/like2.png" alt="메뉴의 좋아요 아이콘"></a>
-                <a href="/Mypage"><img src="../static/assets/mypage2.png" alt="메뉴의 마이페이지 아이콘"></a>
-            </div>
-            <!-- 아이콘 끝 -->
-        </div>
-    </header>
-    </div>
-    <!-- 헤더 끝 -->
-
-    <!-- 메인 시작 -->
     <main id="main">
         <section class="mypage_wrap">
             <div class="mypage_section">
                 <div class="mypage_left">
                     <ul>
                         <li onclick="location.href='/Mypage'">내계정</li>
-                        <li onclick="location.href='/Mypage/Write'">내가 쓴 글</li>
-                        <li onclick="location.href='/Mypage/Like'">내 이미지</li>
+                        <li onclick="location.href='/Mypage/Write'" style="width: 115%;">내가 쓴 글</li>
+                        <li onclick="location.href='/Mypage/Like'" style="width: 115%;">내 이미지</li>
                         <li onclick="logout()">로그아웃</li>
                         <li onclick="location.href='/Mypage/Delete'">탈퇴</li>
                     </ul>
                 </div>
+                
                 <div class="mywrite_right">
-                    <label class="label">*작성 시간이 완전히 동일한 데이터가 있는경우 중복처리될수 있습니다.</label>
+                    <label class="label">*작성하신 기록들을 관리할 수 있습니다.</label>
                     <div class="write_bt">
                         <div>
-                            <button>수정</button>
+                            <button onclick="goToEdit()">수정</button>
                             <button onclick="Delete()">삭제</button>
                         </div>
                     </div>
                     <div id="write_main" class="write_main">
-
+                        <p style="text-align:center; padding:50px;">기록을 불러오는 중...</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
-    <!-- 메인 끝 -->
-
-
-    <!-- 푸터 시작 -->
-    <footer class="footer">
-        <div class="bottom_wrap">
-            <div class="bottom_simbol">
-                <i class="fa-solid fa-house-user"></i>
-            </div>
-            <div class="bottom_info">
-                <span>Copyright 2022 . DAILYLOG . All Rights Reserved .</span>
-                <span>전체서비스 이용약관 개인정보처리방침 통합검색 고객센터 © DAILY LOG</span>
-            </div>
-        </div>
-    </footer>
-    <!-- 푸터 끝 -->
-
-    <!-- Channel Plugin Scripts -->
-    <script>
-        (function () {
-            var w = window;
-            if (w.ChannelIO) {
-                return (window.console.error || window.console.log || function () { })('ChannelIO script included twice.');
-            }
-            var ch = function () {
-                ch.c(arguments);
-            };
-            ch.q = [];
-            ch.c = function (args) {
-                ch.q.push(args);
-            };
-            w.ChannelIO = ch;
-            function l() {
-                if (w.ChannelIOInitialized) {
-                    return;
-                }
-                w.ChannelIOInitialized = true;
-                var s = document.createElement('script');
-                s.type = 'text/javascript';
-                s.async = true;
-                s.src = 'https://cdn.channel.io/plugin/ch-plugin-web.js';
-                s.charset = 'UTF-8';
-                var x = document.getElementsByTagName('script')[0];
-                x.parentNode.insertBefore(s, x);
-            }
-            if (document.readyState === 'complete') {
-                l();
-            } else if (window.attachEvent) {
-                window.attachEvent('onload', l);
-            } else {
-                window.addEventListener('DOMContentLoaded', l, false);
-                window.addEventListener('load', l, false);
-            }
-        })();
-        ChannelIO('boot', {
-            "pluginKey": "950a4eb1-7a2f-4a84-a308-242e60634b09" //please fill with your plugin key
-        });
-    </script>
-    <!-- End Channel Plugin -->
-</body>
+    </body>
 
 </html>
