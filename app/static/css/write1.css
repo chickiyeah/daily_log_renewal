@@ -1,7 +1,4 @@
-.write_wrap {
-    text-align: center;
-    margin-right: 23.5rem;
-}
+
 
 .write_section {
     padding: 15rem 0 3rem 0;
@@ -11,7 +8,7 @@
     display: block;
     text-align: right;
     margin-bottom: 1rem;
-    margin-right: 23.5rem;
+    margin-right: 15rem;
 }
 
 /* 이런 경우엔 부모에 block을 주고 자식에 right준다. 위에<< */
@@ -20,7 +17,7 @@
     background-color: #FF774D;
     color: #fff;
     border-radius: 2rem;
-    width: 5rem;
+    width: 8rem;
     height: 3rem;
 
 }
@@ -30,7 +27,7 @@
 }
 
 .write_box {
-    width: 50%;
+    width: 70%;
     display: flex;
     justify-content: space-between;
     align-items: center;

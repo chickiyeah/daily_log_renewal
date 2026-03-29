@@ -1,340 +1,135 @@
-$(document).ready(function () {
-    if(document.cookie.includes("user_id=")){
-        login = true
-        if(document.cookie.split("user_id=")[1].includes(";")){
-            id = document.cookie.split("user_id=")[1].split(";")[0].replace(" ","")
-        }else{
-            id = document.cookie.split("user_id=")[1].replace(" ","")
-        }
-        getFeelPercent()
-        $.ajax({
-            url:"/User",
-            method:"POST",
-            data:{
-                id:id
-            },
-            success: function(response){
-                let name = response.nickname
-                            //목록 가져오기
-                $.ajax({
-                    url:"/WriteA",
-                    method:"POST",
-                    data:{
-                        "Author":id
-                    },
-                    success: function(response){
-                        response.forEach(element => {
-                            let now = new Date()
+/**
+ * [랭킹 페이지 로직]
+ * 데이터를 한 번만 불러와서 메모리에 저장하고 탭 전환 시 즉시 계산합니다.
+ */
+let allPosts = []; // 서버에서 가져온 전체 게시글 저장용
+let token = localStorage.getItem("userToken");
 
-                            let year = now.getFullYear()
-                            let month = now.getMonth()
-                            let day = now.getDate()
-                            let hours = now.getHours()+9
-                            let minutes = now.getMinutes()
-                            let seconds = now.getSeconds()
-
-                            let nowdate = new Date(year, month, day, hours, minutes, seconds)
-
-                            let chai = nowdate.getTime() - new Date(element.Created_At).getTime()
-                            let a = ""
-
-                            let wmon = new Date(element.Created_At).getUTCMonth()
-                            let wday = new Date(element.Created_At).getDate()
-
-                            if(chai < 1000 * 60)
-                                a += '방금'
-                            else if(chai < 1000 * 60 * 60)
-                                a += Math.floor(chai / (1000 * 60)) + ' 분전';
-                            else if(chai < 1000 * 60 * 60 * 24)
-                                a += Math.floor(chai / (1000 * 60 * 60)) + ' 시간전';
-                            else if(chai < 1000 * 60 * 60 * 24 * 30)
-                                a += Math.floor(chai / (1000 * 60 * 60 * 24)) + ' 일전';
-                            else if(chai < 1000 * 60 * 60 * 24 * 30 * 12)
-                                a += Math.floor(chai / (1000 * 60 * 60 * 24 * 30)) + ' 달전';
-                            
-                            //addCard(wmon+"/"+wday, element.Description, name, a)
-                        });
-                    }
-                })
-            }
-        })
-
-    }else{ 
-        login = false
-        location.href = "/Login?loc = rank"
-        alert("로그인이 필요합니다.")
+$(document).ready(async function () {
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        location.href = "/login?loc=rank";
+        return;
     }
-})
 
-function compare(a, b) {
-    return a-b
+    // 1. 초기 데이터 로드 (딱 한 번)
+    await fetchAllPosts();
+
+    // 2. 초기 화면은 '기분' 통계 표시
+    if (allPosts.length > 0) {
+        getFeelPercent();
+    } else {
+        $("#ranking_card").html("<div class='no_data'>아직 작성된 기록이 없습니다.</div>");
+    }
+});
+
+/**
+ * 서버에서 나의 모든 게시글 가져오기
+ */
+async function fetchAllPosts() {
+    try {
+        const response = await fetch('/api/posts/mine', { // 백엔드 API 경로 확인
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            allPosts = await response.json();
+        } else {
+            console.error("데이터 로드 실패");
+        }
+    } catch (err) {
+        console.error("서버 통신 오류:", err);
+    }
 }
 
+/**
+ * 공통 통계 계산 및 렌더링 함수
+ * @param {string} type - 'feel', 'place', 'person', 'eat'
+ */
+function calculateAndRender(type) {
+    const counts = {};
+    let totalItems = 0;
+
+    allPosts.forEach(post => {
+        let values = [];
+
+        if (type === 'feel') values = [post.feel];
+        else if (type === 'place') values = [post.area_adr];
+        else if (type === 'eat') values = [post.eat];
+        else if (type === 'person') {
+            // 사람 데이터는 콤마 분리 처리
+            if (post.people_meet && post.people_meet !== "None") {
+                values = post.people_meet.split(",").map(s => s.trim());
+            }
+        }
+
+        values.forEach(val => {
+            if (val && val !== "null") {
+                counts[val] = (counts[val] || 0) + 1;
+                totalItems++;
+            }
+        });
+    });
+
+    // 객체를 배열로 변환 후 정렬
+    const sortedArr = Object.entries(counts)
+        .map(([name, count]) => ({
+            name,
+            per: ((count / totalItems) * 100).toFixed(2)
+        }))
+        .sort((a, b) => b.per - a.per);
+
+    // 상위 3개 출력
+    $("#ranking_card").empty();
+    for (let i = 0; i < Math.min(3, sortedArr.length); i++) {
+        addCard(i + 1, sortedArr[i].name, sortedArr[i].per);
+    }
+}
+
+/**
+ * 탭 클릭 시 호출되는 함수들 (기존 함수명 유지)
+ */
+function getFeelPercent() { 
+    updateTabUI(0);
+    calculateAndRender('feel'); 
+}
+function getPlacePercent() { 
+    updateTabUI(1);
+    calculateAndRender('place'); 
+}
+function getPersonPercent() { 
+    updateTabUI(2);
+    calculateAndRender('person'); 
+}
+function getEatPercent() { 
+    updateTabUI(3);
+    calculateAndRender('eat'); 
+}
+
+/**
+ * UI 보조 함수
+ */
+function updateTabUI(index) {
+    $(".ranking_category li").removeClass("active");
+    $(".ranking_category li").eq(index).addClass("active");
+}
 
 function addCard(rank, str, per) {
-    let card = Card(rank, str, per)
-    $("#ranking_card").append(card)
+    let card = Card(rank, str, per);
+    $("#ranking_card").append(card);
 }
 
 function Card(rank, str, per) {
-return `<div>
-            <div class="square">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="ranking_text2">
-                <h2>${rank}위</h2>
-                <h4>${str}</h4>
-                <p>${per}%</p>
-            </div>
-        </div>`
-}
-
-function getFeelPercent(){
-    $.ajax({
-        url:"/WriteA",
-        method:"POST",
-        data:{
-            "Author":id
-        },
-        success: function(response){
-            let great = 0
-            let good = 0
-            let medium = 0
-            let bad = 0
-            let too_bad = 0
-            let total = 0
-            response.forEach(element => {
-                feel = element.Feel
-                if(feel == "맑음"){
-                    great += 1
-                }
-                if(feel == "흐림"){
-                    good += 1
-                }
-                if(feel == "비"){
-                    medium += 1
-                }                    
-                if(feel == "눈"){
-                    bad += 1
-                }
-                if(feel == "바람"){
-                    too_bad += 1
-                }
-            });
-            total = great+good+medium+bad+too_bad
-            let greatper = (great / total * 100)
-            let goodper = (good / total * 100)
-            let mediumper = (medium / total * 100)
-            let badper = (bad / total * 100)
-            let too_badper = (too_bad / total * 100)
-
-            const per = [greatper,goodper,mediumper,badper,too_badper];
-            per.sort(function(a,b) {
-                return b-a;
-            })
-            let top = []
-            per.forEach(element => {
-                if(greatper == element){
-                    data = {
-                        "name":"맑음",
-                        "per":element.toFixed(2)
-                    }
-                    top.push(data)
-                }
-
-                if(goodper == element){
-                    data = {
-                        "name":"흐림",
-                        "per":element.toFixed(2)
-                    }
-                    top.push(data)
-                }
-
-                if(mediumper == element){
-                    data = {
-                        "name":"비",
-                        "per":element.toFixed(2)
-                    }
-                    top.push(data)
-                }
-
-                if(badper == element){
-                    data = {
-                        "name":"눈",
-                        "per":element.toFixed(2)
-                    }
-                    top.push(data)
-                }
-
-                if(too_badper == element){
-                    data = {
-                        "name":"바람",
-                        "per":element.toFixed(2)
-                    }
-                    top.push(data)
-                }
-            });
-
-            console.log(top)
-            $("#ranking_card").empty()
-            for(var i = 0; i < 3; i++){
-                 j = i + 1                   
-                 console.log(j,top[i].name,top[i].per)
-                 addCard(j,top[i].name,top[i].per)
-            }          
-        }
-    });
-}
-
-function getPlacePercent(){
-    $.ajax({
-        url:"/WriteA",
-        method:"POST",
-        data:{
-            "Author":id
-        },
-        success: function(response){
-            const result = {};
-            response.forEach(element => {
-                adr = element.AREA_ADR
-                result[adr] = (result[adr] || 0)+1; 
-            })
-
-            
-            let per = []
-            let resmap = new Map(Object.entries(result))
-            const mapSort1 = new Map([...resmap.entries()].sort((a, b) => b[1] - a[1]));
-            let max = 0
-
-            mapSort1.forEach(element => {
-                max += element
-            })
-
-            mapSort1.forEach(element => {
-                percent = element/max * 100
-                per.push(percent.toFixed(2))
-            })
-
-            let keyarr = Array.from(mapSort1.keys())
-            let permap = []
-            for(var i = 0; i < keyarr.length; i++){
-                permap.push({'name':keyarr[i], 'per':per[i]})
-            }
-
-            $("#ranking_card").empty()
-            for(var i = 0; i < 3; i++){
-                 j = i + 1                   
-                 console.log(j,permap[i].name,permap[i].per)
-                 addCard(j,permap[i].name,permap[i].per)
-            }          
-        }
-    })        
-}
-
-function getPersonPercent() {
-    $.ajax({
-        url:"/WriteA",
-        method:"POST",
-        data:{
-            "Author":id
-        },
-        success: function(response){
-            const result = {};
-            response.forEach(element => {
-                peo = element.People_meet
-
-                if(peo.includes(",")){
-                    peo.split(",").forEach(ele => {
-                        result[ele] = (result[ele] || 0)+1; 
-                    })
-                }else{
-                    if(peo != "None"){
-                        result[peo] = (result[peo] || 0)+1; 
-                    }
-                }
-                
-            })
-
-            
-            let per = []
-            let resmap = new Map(Object.entries(result))
-            const mapSort1 = new Map([...resmap.entries()].sort((a, b) => b[1] - a[1]));
-            let max = 0
-
-            mapSort1.forEach(element => {
-                max += element
-            })
-
-            mapSort1.forEach(element => {
-                percent = element/max * 100
-                per.push(percent.toFixed(2))
-            })
-
-            let keyarr = Array.from(mapSort1.keys())
-            let permap = []
-            for(var i = 0; i < keyarr.length; i++){
-                permap.push({'name':keyarr[i], 'per':per[i]})
-            }
-            
-            
-            $("#ranking_card").empty()
-            for(var i = 0; i < 3; i++){
-                 j = i + 1                   
-                 console.log(j,permap[i].name,permap[i].per)
-                 addCard(j,permap[i].name,permap[i].per)
-            }          
-                
-            
-
-        }
-    })           
-}
-
-function getEatPercent(){
-    $.ajax({
-        url:"/WriteA",
-        method:"POST",
-        data:{
-            "Author":id
-        },
-        success: function(response){
-            const result = {};
-                response.forEach(element => {
-                    adr = element.Eat
-                    result[adr] = (result[adr] || 0)+1; 
-                })
-    
-                
-                let per = []
-                let resmap = new Map(Object.entries(result))
-                const mapSort1 = new Map([...resmap.entries()].sort((a, b) => b[1] - a[1]));
-                let max = 0
-    
-                mapSort1.forEach(element => {
-                    max += element
-                })
-    
-                mapSort1.forEach(element => {
-                    percent = element/max * 100
-                    per.push(percent.toFixed(2))
-                })
-    
-                let keyarr = Array.from(mapSort1.keys())
-                let permap = []
-                for(var i = 0; i < keyarr.length; i++){
-                    permap.push({'name':keyarr[i], 'per':per[i]})
-                }
-
-                
-                $("#ranking_card").empty()
-                for(var i = 0; i < 3; i++){
-                     j = i + 1                   
-                     console.log(j,permap[i].name,permap[i].per)
-                     addCard(j,permap[i].name,permap[i].per)
-                }                      
-    
-        }
-    });
+    // 기존 HTML 구조 유지
+    return `<div>
+                <div class="square">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="ranking_text2">
+                    <h2>${rank}위</h2>
+                    <h4>${str}</h4>
+                    <p>${per}%</p>
+                </div>
+            </div>`;
 }

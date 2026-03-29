@@ -136,6 +136,15 @@
     color: #fff;
 }
 
+.rank_item { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.rank_num { font-weight: bold; color: #ff6b6b; margin-bottom: 5px; }
+.rank_content { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.rank_name { font-size: 1.1rem; font-weight: 500; }
+.rank_count { color: #888; }
+.rank_bar_bg { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+.rank_bar_fill { height: 100%; background: linear-gradient(90deg, #ff6b6b, #ffb199); transition: width 0.5s ease-in-out; }
+.ranking_category li.active a { color: #ff6b6b; font-weight: bold; border-bottom: 2px solid #ff6b6b; }
+
 @keyframes circle{
     0%{
         transform:rotate(0);

@@ -65,6 +65,16 @@ async def writemap(request: Request):
 async def edit(request: Request):
     return templates.TemplateResponse("write2(update).html", {"request": request})
 
+@app.get("/write/detail", response_class=HTMLResponse)
+async def edit(request: Request):
+    return templates.TemplateResponse("detail.html", {"request": request})
+
+#랭킹
+@app.get("/rank", response_class=HTMLResponse)
+async def read_ranking_page(request: Request):
+    # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
+    return templates.TemplateResponse("ranking.html", {"request": request})
+
 # ---------------------------------------------------------
 # [API] 데이터 처리 컨트롤러 (실제 로직)
 # ---------------------------------------------------------
@@ -266,3 +276,110 @@ async def create_post(
     db.refresh(new_post) # 생성된 후 ID 등을 업데이트 받기 위해 추가하는 것이 좋습니다.
     
     return {"status": "OK", "id": new_post.id}
+
+#일기 수정
+@app.patch("/api/posts/{post_id}")
+async def update_post(
+    post_id: int,
+    title: str = Form(...),
+    content: str = Form(...),
+    feel: str = Form(...),
+    eat: str = Form(...),
+    people_meet: str = Form(...),
+    image_url: str = Form(None),
+    address: str = Form(None),
+    place_name: str = Form(None),
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    # 1. 수정할 글이 본인 글인지 확인
+    post = db.query(models.Post).filter(
+        models.Post.id == post_id, 
+        models.Post.author_id == current_user.id
+    ).first()
+    
+    if not post:
+        raise HTTPException(status_code=404, detail="글을 찾을 수 없거나 수정 권한이 없습니다.")
+
+    # 2. 값 업데이트
+    post.title = title
+    post.content = content
+    post.feel = feel
+    post.eat = eat
+    post.people_meet = people_meet
+    post.image_url = image_url
+    if address: post.area_adr = address
+    if place_name: post.area_name = place_name
+
+    db.commit() # 변경사항 DB 반영
+    return {"status": "OK"}
+
+#일기 디테일
+@app.get("/api/posts/{post_id}")
+async def get_post_detail(
+    post_id: int, 
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    # 내 글인지 확인하고 가져오기 (보안)
+    post = db.query(models.Post).filter(
+        models.Post.id == post_id, 
+        models.Post.author_id == current_user.id
+    ).first()
+    
+    if not post:
+        raise HTTPException(status_code=404, detail="글을 찾을 수 없습니다.")
+        
+    return post
+
+#일기 삭제
+@app.delete("/api/posts/{post_id}")
+async def delete_post(
+    post_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    post = db.query(models.Post).filter(models.Post.id == post_id, models.Post.author_id == current_user.id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="삭제할 글이 없습니다.")
+    
+    db.delete(post)
+    db.commit()
+    return {"message": "삭제 완료"}
+
+#----------------------------------
+# 랭킹
+#-----------------------------------
+from collections import Counter
+
+@app.get("/api/stats/ranking")
+async def get_user_ranking(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    posts = db.query(models.Post).filter(models.Post.author_id == current_user.id).all()
+    
+    # 데이터 집계용 리스트
+    feels = [p.feel for p in posts if p.feel]
+    places = [p.area_adr for p in posts if p.area_adr]
+    eats = [p.eat for p in posts if p.eat]
+    
+    # 사람 데이터는 콤마(,)로 구분되어 있을 수 있음
+    people = []
+    for p in posts:
+        if p.people_meet and p.people_meet != "None":
+            names = [n.strip() for n in p.people_meet.split(",")]
+            people.extend(names)
+
+    # 빈도수 계산 및 정렬 (Counter 사용)
+    def format_rank(data_list):
+        counts = Counter(data_list).most_common(10) # 상위 10개
+        return [{"name": name, "count": count} for name, count in counts]
+
+    return {
+        "feel": format_rank(feels),
+        "place": format_rank(places),
+        "person": format_rank(people),
+        "eat": format_rank(eats),
+        "total_count": len(posts)
+    }
