@@ -103,14 +103,19 @@ async def read_ranking_page(request: Request):
     return templates.TemplateResponse("ranking.html", {"request": request})
 
 @app.get("/Mypage/Write", response_class=HTMLResponse)
-async def read_ranking_page(request: Request):
+async def read_allwrite_page(request: Request):
     # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
     return templates.TemplateResponse("mywrite.html", {"request": request})
 
 @app.get("/Mypage/Like", response_class=HTMLResponse)
-async def read_ranking_page(request: Request):
+async def read_Image_page(request: Request):
     # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
     return templates.TemplateResponse("mylike.html", {"request": request})
+
+@app.get("/Mypage/Delete", response_class=HTMLResponse)
+async def sessionout_page(request: Request):
+    # templates.TemplateResponse를 사용하여 HTML 파일을 반환합니다.
+    return templates.TemplateResponse("sessionout.html", {"request": request})
 
 # ---------------------------------------------------------
 # [API] 데이터 처리 컨트롤러 (실제 로직)
@@ -193,6 +198,26 @@ async def read_user_me(current_user: models.User = Depends(auth.get_current_user
         "birthday": current_user.birthday
     }
 
+# 탈퇴
+# app/main.py
+
+@app.delete("/api/user/withdraw")
+async def withdraw_account(
+    password: str = Form(None), # 일반 회원은 필수, SNS 회원은 None 가능
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    # 1. 일반 로그인 유저인 경우 비밀번호 확인
+    # (hashed_password가 있는 경우만 체크)
+    if current_user.hashed_password:
+        if not password or not auth.verify_password(password, current_user.hashed_password):
+            raise HTTPException(status_code=400, detail="INVALID_PASSWORD")
+
+    # 2. 유저 삭제 (CASCADE 설정으로 일기/사진 자동 삭제)
+    db.delete(current_user)
+    db.commit()
+    
+    return {"status": "OK"}
 
 # 랜덤 명언 (기존 Good_Say 대체)
 @app.get("/api/quotes/random")
