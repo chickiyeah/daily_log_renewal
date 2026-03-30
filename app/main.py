@@ -67,6 +67,11 @@ async def login_page(request: Request):
     """아이디 찾기"""
     return templates.TemplateResponse("idpw.html", {"request": request})
 
+@app.get("/reset-password.html", response_class=HTMLResponse)
+async def login_page(request: Request):
+    """로그인 페이지 이동"""
+    return templates.TemplateResponse("reset-password.html", {"request": request})
+
 # --------------------------------------------------------
 # [WEB] 일기 작성
 # --------------------------------------------------------
