@@ -17,7 +17,7 @@
 
     <!-- 스크립트 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="../static/js/idpw.js" defer></script>
+    <script src="../static/js/idpw_new.js" defer></script>
 
     <style type="text/css">
         A:link {
@@ -50,128 +50,38 @@
             <h1>LOG</h1>
         </header>
     </a>
-    <section>
+
+    <section class="idpw_wrap">
         <article id="left">
             <div id="left_content" class="idpw_article">
-                <p class="idpw_title">아이디/ 이메일 찾기</p>
-                <p style="float: left">이름</p>
-                <div class="id">
-                    <input id="name1" type="email" class="email_input">
+                <p class="idpw_title">아이디 / 이메일 찾기</p>
+                <div  class="id input_group">
+                    <label for="name1">이름</label>
+                    <input id="name1" type="text" class="email_input">
                 </div>
-                <p style="float: left">전화번호</p>
-                <div class="id">
-                    <input id="phone1" type="email" class="email_input">
+                <div  class="id input_group">
+                    <label for="phone1">전화번호</label>
+                    <input id="phone1" type="text" class="email_input" placeholder="010-0000-0000">
                 </div>
-                <p style="float: left">생년월일</p>
-                <div class="id">
-                    <input type="date" id="birthday1" min="1800-01-01" max="9999-12-31">
+                <div class="id input_group">
+                    <label for="birthday1">생년월일</label>
+                    <input type="date" id="birthday1">
                 </div>
-                <input id="findid" type="submit" class="submit" value="아이디 찾기">
+                <input id="findid" type="button" class="submit" value="아이디 찾기">
             </div>
         </article>
+
         <article id="right">
             <div id="right_content" class="idpw_article">
                 <p class="idpw_title">비밀번호 찾기</p>
-                <p style="float: left">이메일</p>
-                <div class="id">
-                    <input id="email1" onkeypress="javascript:if(event.keyCode==13) RstPW()" type="email"
-                        class="email_input">
+                <div class="input_group">
+                    <label for="email1">이메일</label>
+                    <input id="email1" type="email" class="email_input" placeholder="example@email.com">
                 </div>
-                <input id="RSTPW" onclick="RstPW()" type="submit" class="submit" value="비밀번호 찾기">
-
-
+                <input id="RSTPW" onclick="RstPW()" type="button" class="submit" value="비밀번호 찾기">
+            </div>
         </article>
     </section>
-
-    <script>
-        function RstPW() {
-            var email = $("#email1").val()
-
-            $.ajax({
-                type: "POST",
-                url: "/User/ResetPW",
-                dataType: 'json',
-                data: {
-                    "email": email
-                },
-                success: function (response) {
-                    if (response == "DONE") {
-                        alert("이메일을 전송했습니다.\n이메일이 오지 않은경우 스팸메일함을 확인해보세요.")
-                    }
-                    if (response == "INVALID_EMAIL") {
-                        alert("이메일 형태가 올바르지 않습니다.\n입력값을 확인해주세요")
-                    }
-                    if (response == "EMAIL_NOT_FOUND") {
-                        alert("해당 이메일을 찾을수 없습니다.\n아이디가 올바르지 않습니다.")
-                    }
-                    if (response == "MISSING_EMAIL") {
-                        alert("이메일을 입력해주세요.")
-                    }
-                    console.log(response)
-                },
-                error: function (err) {
-                    err = err.responseText
-                    if (err == "DONE") {
-                        alert("이메일을 전송했습니다.\n이메일이 오지 않은경우 스팸메일함을 확인해보세요.")
-                    }
-                    if (err == "INVALID_EMAIL") {
-                        alert("이메일 형태가 올바르지 않습니다.\n입력값을 확인해주세요")
-                    }
-                    if (err == "EMAIL_NOT_FOUND") {
-                        alert("해당 이메일을 찾을수 없습니다.\n아이디가 올바르지 않습니다.")
-                    }
-                    if (err == "MISSING_EMAIL") {
-                        alert("이메일을 입력해주세요.")
-                    }
-                    console.log(err)
-                }
-            })
-        }
-    </script>
-
-    <!-- Channel Plugin Scripts -->
-    <script>
-        (function () {
-            var w = window;
-            if (w.ChannelIO) {
-                return (window.console.error || window.console.log || function () { })('ChannelIO script included twice.');
-            }
-            var ch = function () {
-                ch.c(arguments);
-            };
-            ch.q = [];
-            ch.c = function (args) {
-                ch.q.push(args);
-            };
-            w.ChannelIO = ch;
-            function l() {
-                if (w.ChannelIOInitialized) {
-                    return;
-                }
-                w.ChannelIOInitialized = true;
-                var s = document.createElement('script');
-                s.type = 'text/javascript';
-                s.async = true;
-                s.src = 'https://cdn.channel.io/plugin/ch-plugin-web.js';
-                s.charset = 'UTF-8';
-                var x = document.getElementsByTagName('script')[0];
-                x.parentNode.insertBefore(s, x);
-            }
-            if (document.readyState === 'complete') {
-                l();
-            } else if (window.attachEvent) {
-                window.attachEvent('onload', l);
-            } else {
-                window.addEventListener('DOMContentLoaded', l, false);
-                window.addEventListener('load', l, false);
-            }
-        })();
-        ChannelIO('boot', {
-            "pluginKey": "950a4eb1-7a2f-4a84-a308-242e60634b09" //please fill with your plugin key
-        });
-    </script>
-    <!-- End Channel Plugin -->
-
 </body>
 
 </html>

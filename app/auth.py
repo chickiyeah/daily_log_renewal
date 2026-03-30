@@ -24,6 +24,22 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
 # --- 비밀번호 관련 함수 ---
 
+# 비밀번호 재설정 토큰 생성용 (15분 유효)
+def create_reset_token(email: str):
+    expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode = {"exp": expire, "sub": email, "purpose": "reset_password"}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# 토큰 검증
+def verify_reset_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("purpose") != "reset_password":
+            return None
+        return payload.get("sub")
+    except JWTError:
+        return None
+
 def get_password_hash(password: str) -> str:
     """비밀번호를 해시화하여 반환 (bcrypt)"""
     pwd_bytes = password.encode('utf-8')

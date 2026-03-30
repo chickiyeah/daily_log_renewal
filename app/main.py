@@ -8,12 +8,29 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
+from app.utils.mails import send_reset_email
+
 from . import models, database, auth, schemas
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # DB 테이블 생성 (최초 1회 실행 시 MySQL에 테이블 자동 생성)
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
+
+class Settings:
+    SMTP_SERVER: str = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", 587))
+    SMTP_USER: str = os.getenv("SMTP_USER")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD")
+    BASE_URL: str = os.getenv("BASE_URL", "https://dailylog.decodns.org") # 메일 링크용
+
+settings = Settings()
 
 # 정적 파일 및 템플릿 설정
 templates = Jinja2Templates(directory="app/templates")
@@ -42,8 +59,13 @@ async def login_page(request: Request):
 
 @app.get("/Mypage", response_class=HTMLResponse)
 async def login_page(request: Request):
-    """로그인 페이지 이동"""
+    """마이페이지"""
     return templates.TemplateResponse("profile.html", {"request": request})
+
+@app.get("/Login/find_account", response_class=HTMLResponse)
+async def login_page(request: Request):
+    """아이디 찾기"""
+    return templates.TemplateResponse("idpw.html", {"request": request})
 
 # --------------------------------------------------------
 # [WEB] 일기 작성
@@ -411,3 +433,98 @@ async def get_user_ranking(
         "eat": format_rank(eats),
         "total_count": len(posts)
     }
+
+#----------------------------------
+# 계정 찾기
+#----------------------------------
+
+
+# 1. 아이디(이메일) 찾기 API
+@app.post("/api/user/find-id")
+async def find_user_id(
+    name: str = Form(...),
+    phone: str = Form(...),
+    birthday: str = Form(...),
+    db: Session = Depends(database.get_db)
+):
+    user = db.query(models.User).filter(
+        models.User.name == name,
+        models.User.phone == phone,
+        models.User.birthday == birthday
+    ).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="일치하는 정보가 없습니다.")
+    
+    # 보안을 위해 이메일의 일부를 마스킹 처리 (예: na****@gmail.com)
+    email_parts = user.email.split("@")
+    masked_email = email_parts[0][:2] + "****" + "@" + email_parts[1]
+    
+    return {"status": "OK", "email": masked_email}
+
+
+
+from .auth import create_reset_token, verify_reset_token # 이전에 만든 토큰 생성 함수
+
+@app.post("/api/user/reset-pw")
+async def request_password_reset(
+    email: str = Form(...), 
+    db: Session = Depends(database.get_db)
+):
+    # 1. 유저 존재 확인
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        # 보안상 유저가 없어도 '발송했다'고 하거나, 명확히 에러를 주거나 선택
+        raise HTTPException(status_code=404, detail="EMAIL_NOT_FOUND")
+
+    # 2. 15분짜리 임시 토큰 생성
+    reset_token = create_reset_token(email)
+    
+    # 3. 링크 생성 (사용자가 클릭할 페이지 주소)
+    reset_link = f"{settings.BASE_URL}/reset-password.html?token={reset_token}"
+    
+    # 4. 메일 발송
+    success = send_reset_email(email, reset_link)
+    
+    if success:
+        return {"status": "DONE"}
+    else:
+        raise HTTPException(status_code=500, detail="MAIL_SERVER_ERROR")
+    
+from .auth import create_reset_token # 이전에 만든 토큰 생성 함수
+
+@app.post("/api/user/reset-pw")
+async def request_password_reset(
+    email: str = Form(...), 
+    db: Session = Depends(database.get_db)
+):
+    # 1. 유저 존재 확인
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        # 보안상 유저가 없어도 '발송했다'고 하거나, 명확히 에러를 주거나 선택
+        raise HTTPException(status_code=404, detail="EMAIL_NOT_FOUND")
+
+    # 2. 15분짜리 임시 토큰 생성
+    reset_token = create_reset_token(email)
+    
+    # 3. 링크 생성 (사용자가 클릭할 페이지 주소)
+    reset_link = f"{settings.BASE_URL}/reset-password.html?token={reset_token}"
+    
+    # 4. 메일 발송
+    success = send_reset_email(email, reset_link)
+    
+    if success:
+        return {"status": "DONE"}
+    else:
+        raise HTTPException(status_code=500, detail="MAIL_SERVER_ERROR")
+    
+@app.post("/api/user/confirm-reset")
+async def confirm_reset(token: str = Form(...), new_password: str = Form(...), db: Session = Depends(database.get_db)):
+    email = verify_reset_token(token) # 토큰 검증
+    if not email:
+        raise HTTPException(status_code=400, detail="INVALID_OR_EXPIRED_TOKEN")
+
+    user = db.query(models.User).filter(models.User.email == email).first()
+    user.hashed_password = auth.get_password_hash(new_password)
+    db.commit()
+    return {"status": "SUCCESS"}
